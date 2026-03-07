@@ -11,6 +11,29 @@ from models import Movie
 random.seed(42)
 
 SEED_DATA = {
+    "Michael Ninh": {                  # Eclectic cinephile — world cinema + prestige drama
+        "movies": [
+            ("The Shawshank Redemption", 5, "watched"),
+            ("Schindler's List",         5, "watched"),
+            ("Spirited Away",            5, "watched"),
+            ("Parasite",                 5, "watched"),
+            ("Good Will Hunting",        4, "watched"),
+            ("Forrest Gump",             4, "watched"),
+            ("Eternal Sunshine of the Spotless Mind", 5, "watched"),
+            ("In the Mood for Love",     4, "watchlist"),
+        ]
+    },
+    "mikel": {                         # Sci-fi & cerebral action
+        "movies": [
+            ("Inception",               5, "watched"),
+            ("The Dark Knight",         5, "watched"),
+            ("Blade Runner 2049",       5, "watched"),
+            ("Arrival",                 5, "watched"),
+            ("The Matrix",              4, "watched"),
+            ("Mad Max: Fury Road",      4, "watched"),
+            ("Ex Machina",              4, "watchlist"),
+        ]
+    },
     "alice": {                         # Christopher Nolan obsessive
         "movies": [
             ("The Dark Knight",         5, "watched"),
