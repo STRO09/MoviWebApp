@@ -109,7 +109,8 @@ def logout():
 @app.route("/")
 def index():
     users = data_manager.get_users()
-    return render_template("index.html", users=users)
+    total_movies = Movie.query.count()
+    return render_template("index.html", users=users, total_movies=total_movies)
 
 
 @app.route("/users/<int:user_id>")
