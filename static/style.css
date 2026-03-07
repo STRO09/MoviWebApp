@@ -1,4 +1,4 @@
-/* Page layout */
+/* ===================== Base layout ===================== */
 html {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     background: linear-gradient(135deg, #050816, #15162b);
@@ -13,7 +13,7 @@ body {
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.6);
 }
 
-/* Header and navigation */
+/* ===================== Header / nav ===================== */
 .main-header {
     display: flex;
     align-items: center;
@@ -47,103 +47,12 @@ body {
     transform: translateY(-1px);
 }
 
-/* Main content container */
+/* ===================== Container ===================== */
 .container {
     padding: 1.5rem;
 }
 
-/* Generic cards for movies / users */
-.card-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.card {
-    background: #1e272e;
-    border-radius: 12px;
-    padding: 1rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
-}
-
-.card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 0.35rem;
-}
-
-.card-meta {
-    font-size: 0.9rem;
-    color: #a4b0be;
-    margin-bottom: 0.35rem;
-}
-
-/* Forms and buttons */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 1rem;
-}
-
-label {
-    font-weight: 500;
-    font-size: 0.95rem;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="email"],
-textarea,
-select {
-    padding: 0.5rem 0.6rem;
-    border-radius: 6px;
-    border: 1px solid #3c40c6;
-    background-color: #0f141b;
-    color: #f5f5f5;
-    font-size: 0.95rem;
-}
-
-input[type="text"]:focus,
-input[type="number"]:focus,
-input[type="email"]:focus,
-textarea:focus,
-select:focus {
-    outline: none;
-    border-color: #00a8ff;
-    box-shadow: 0 0 0 2px rgba(0, 168, 255, 0.25);
-}
-
-button,
-input[type="submit"] {
-    align-self: flex-start;
-    background: linear-gradient(135deg, #00a8ff, #9c88ff);
-    color: #050816;
-    border: none;
-    padding: 0.45rem 1.1rem;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    letter-spacing: 0.03em;
-    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
-}
-
-button:hover,
-input[type="submit"]:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
-    filter: brightness(1.05);
-}
-
-/* Flash messages */
+/* ===================== Flash messages ===================== */
 .flash-messages {
     margin-bottom: 1rem;
     display: flex;
@@ -170,11 +79,336 @@ input[type="submit"]:hover {
     color: #ff4757;
 }
 
-/* Utility */
-.text-center {
-    text-align: center;
+/* ===================== Movie cards ===================== */
+.card-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+    list-style: none;
+    padding: 0;
 }
 
+.card {
+    background: #1e272e;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+
+.movie-poster {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    display: block;
+}
+
+.movie-poster-placeholder {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    background: #151c25;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+}
+
+.card-body {
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    line-height: 1.3;
+}
+
+.card-year {
+    color: #a4b0be;
+    font-weight: 400;
+    font-size: 0.88rem;
+}
+
+.card-meta {
+    font-size: 0.85rem;
+    color: #a4b0be;
+    margin-bottom: 0.2rem;
+}
+
+.card-plot {
+    font-size: 0.82rem;
+    color: #8a94a0;
+    margin-top: 0.3rem;
+    line-height: 1.45;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 0.75rem;
+}
+
+/* ===================== Star ratings ===================== */
+.stars {
+    margin: 0.3rem 0;
+    font-size: 1.05rem;
+    letter-spacing: 1px;
+}
+
+.star {
+    color: #333a4a;
+}
+
+.star.filled {
+    color: #ffd700;
+}
+
+/* ===================== Buttons ===================== */
+.btn {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: none;
+    background: linear-gradient(135deg, #00a8ff, #9c88ff);
+    color: #050816;
+    border: none;
+    transition: transform 0.12s ease, filter 0.12s ease;
+    line-height: 1.4;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+.btn-sm {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.78rem;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff4757, #ff6b81);
+    color: #fff;
+}
+
+button,
+input[type="submit"] {
+    align-self: flex-start;
+    background: linear-gradient(135deg, #00a8ff, #9c88ff);
+    color: #050816;
+    border: none;
+    padding: 0.45rem 1.1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+}
+
+button:hover,
+input[type="submit"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+    filter: brightness(1.05);
+}
+
+/* ===================== Forms ===================== */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+label {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="email"],
+textarea,
+select {
+    padding: 0.5rem 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #3c40c6;
+    background-color: #0f141b;
+    color: #f5f5f5;
+    font-size: 0.95rem;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #00a8ff;
+    box-shadow: 0 0 0 2px rgba(0, 168, 255, 0.25);
+}
+
+/* ===================== Add-movie form ===================== */
+.add-movie-form {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+}
+
+.add-movie-form form {
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1;
+    min-width: 160px;
+}
+
+.form-row input[type="submit"] {
+    align-self: flex-end;
+    flex-shrink: 0;
+}
+
+/* ===================== Page header / search / sort ===================== */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.sort-search {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.sort-form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0;
+}
+
+.sort-form label {
+    font-size: 0.88rem;
+    color: #a4b0be;
+    white-space: nowrap;
+}
+
+.sort-form select {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.88rem;
+}
+
+#movie-search {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.88rem;
+    width: 180px;
+}
+
+/* ===================== Auth box ===================== */
+.auth-box {
+    max-width: 420px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #a4b0be;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.back-link:hover {
+    color: #00a8ff;
+}
+
+/* ===================== User list ===================== */
+.user-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #1e272e;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+}
+
+.user-link {
+    color: #f5f5f5;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.user-link:hover {
+    color: #00a8ff;
+}
+
+.movie-count {
+    font-size: 0.82rem;
+    color: #a4b0be;
+    font-weight: 400;
+}
+
+/* ===================== Utility ===================== */
+.text-muted {
+    color: #a4b0be;
+}
+
+.text-muted a {
+    color: #00a8ff;
+    text-decoration: none;
+}
+
+.text-muted a:hover {
+    text-decoration: underline;
+}
+
+.text-center { text-align: center; }
 .mt-1 { margin-top: 0.5rem; }
 .mt-2 { margin-top: 1rem; }
 .mt-3 { margin-top: 1.5rem; }

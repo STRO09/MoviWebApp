@@ -1,21 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>Users</h2>
+  <h2>All Users</h2>
 
-  <form action="{{ url_for('create_user') }}" method="post" class="mt-2">
-    <label for="name">New user name</label>
-    <input type="text" id="name" name="name" required maxlength="80">
-    <input type="submit" value="Add user">
-  </form>
+  {% if not current_user.is_authenticated %}
+    <p class="mt-1 text-muted">
+      <a href="{{ url_for('register') }}">Register</a> to create your own movie list,
+      or <a href="{{ url_for('login') }}">login</a> if you already have an account.
+    </p>
+  {% endif %}
 
-  <ul class="mt-2">
+  <ul class="user-list mt-2">
     {% for user in users %}
-      <li>
-        <a href="{{ url_for('get_movies', user_id=user.id) }}">{{ user.username }}</a>
+      <li class="user-item">
+        <a href="{{ url_for('get_movies', user_id=user.id) }}" class="user-link">
+          {{ user.username }}
+          <span class="movie-count">{{ user.movies | length }} movie{{ 's' if user.movies | length != 1 }}</span>
+        </a>
+        {% if current_user.is_authenticated and current_user.id == user.id %}
+          <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post"
+                onsubmit="return confirm('Delete your account and all your movies? This cannot be undone.')">
+            <button type="submit" class="btn btn-danger btn-sm">Delete account</button>
+          </form>
+        {% endif %}
       </li>
     {% else %}
-      <li>No users yet.</li>
+      <li class="user-item">No users yet. <a href="{{ url_for('register') }}">Be the first!</a></li>
     {% endfor %}
   </ul>
 {% endblock %}

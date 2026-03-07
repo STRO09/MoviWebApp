@@ -1,23 +1,103 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h2>{{ user.username }}'s movies</h2>
+  <div class="page-header">
+    <h2>{{ user.username }}'s movies</h2>
+    <div class="sort-search">
+      <input type="text" id="movie-search" placeholder="Search movies…">
+      <form method="get" class="sort-form">
+        <label for="sort">Sort:</label>
+        <select name="sort" id="sort" onchange="this.form.submit()">
+          <option value="title"  {{ 'selected' if sort == 'title' }}>A–Z</option>
+          <option value="rating" {{ 'selected' if sort == 'rating' }}>Rating</option>
+          <option value="year"   {{ 'selected' if sort == 'year' }}>Year</option>
+        </select>
+      </form>
+    </div>
+  </div>
 
-  <form action="{{ url_for('add_movie', user_id=user.id) }}" method="post" class="mt-2">
-    <label for="title">Add a movie</label>
-    <input type="text" id="title" name="title" placeholder="Movie title" required maxlength="120">
-    <input type="submit" value="Add movie">
-  </form>
+  {% if current_user.is_authenticated and current_user.id == user.id %}
+    <div class="add-movie-form mt-2">
+      <form action="{{ url_for('add_movie', user_id=user.id) }}" method="post">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="title">Movie title</label>
+            <input type="text" id="title" name="title" placeholder="e.g. Inception" required maxlength="120">
+          </div>
+          <div class="form-group">
+            <label for="rating">Rating</label>
+            <select name="rating" id="rating">
+              <option value="">— none —</option>
+              <option value="1">★ Poor</option>
+              <option value="2">★★ Fair</option>
+              <option value="3">★★★ Good</option>
+              <option value="4">★★★★ Great</option>
+              <option value="5">★★★★★ Excellent</option>
+            </select>
+          </div>
+          <input type="submit" value="Add movie" class="btn-submit">
+        </div>
+      </form>
+    </div>
+  {% endif %}
 
   {% if favorites %}
-    <ul class="card-list mt-2">
+    <ul class="card-list mt-2" id="movie-grid">
       {% for movie in favorites %}
-        <li class="card">
-          <div class="card-title">{{ movie.title }}</div>
+        <li class="card movie-card" data-title="{{ movie.title }}">
+          {% if movie.poster_url %}
+            <img src="{{ movie.poster_url }}" alt="{{ movie.title }} poster" class="movie-poster">
+          {% else %}
+            <div class="movie-poster-placeholder">🎬</div>
+          {% endif %}
+
+          <div class="card-body">
+            <div class="card-title">
+              {{ movie.title }}
+              {% if movie.year %}<span class="card-year">({{ movie.year }})</span>{% endif %}
+            </div>
+            {% if movie.director %}
+              <div class="card-meta">Dir. {{ movie.director }}</div>
+            {% endif %}
+            {% if movie.rating %}
+              <div class="stars">
+                {% for i in range(1, 6) %}
+                  <span class="star {{ 'filled' if i <= movie.rating else '' }}">★</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% if movie.plot %}
+              <p class="card-plot">{{ movie.plot | truncate(100) }}</p>
+            {% endif %}
+
+            {% if current_user.is_authenticated and current_user.id == user.id %}
+              <div class="card-actions">
+                <a href="{{ url_for('edit_movie', user_id=user.id, movie_id=movie.id) }}" class="btn btn-sm">Edit</a>
+                <form action="{{ url_for('delete_movie', user_id=user.id, movie_id=movie.id) }}" method="post"
+                      onsubmit="return confirm('Remove {{ movie.title | replace("'", "\\'") }}?')">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </div>
+            {% endif %}
+          </div>
         </li>
       {% endfor %}
     </ul>
   {% else %}
-    <p class="mt-2">No movies yet. Add one above!</p>
+    <p class="mt-2 text-muted">
+      No movies yet.
+      {% if current_user.is_authenticated and current_user.id == user.id %}Add one above!{% endif %}
+    </p>
   {% endif %}
+
+  <script>
+    const searchInput = document.getElementById('movie-search');
+    const cards = document.querySelectorAll('.movie-card');
+    searchInput.addEventListener('input', function () {
+      const q = this.value.toLowerCase();
+      cards.forEach(card => {
+        card.style.display = card.dataset.title.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  </script>
 {% endblock %}
