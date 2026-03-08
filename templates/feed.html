@@ -67,7 +67,11 @@
                     </div>
                     {% endif %}
                     <span class="activity-user">
+                        {% if movie.status == 'currently_watching' %}
+                        is watching
+                        {% else %}
                         added by
+                        {% endif %}
                         <a href="{{ url_for('user_profile', username=movie.user.username) }}">{{ movie.user.username }}</a>
                     </span>
                 </div>

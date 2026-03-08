@@ -41,7 +41,7 @@ class DataManager:
 
     def get_movies(self, user_id, sort="title", status=""):
         query = Movie.query.filter_by(user_id=user_id)
-        if status in ("watched", "watchlist"):
+        if status in ("watched", "watchlist", "currently_watching"):
             query = query.filter(Movie.status == status)
         movies = query.all()
         if sort == "rating":

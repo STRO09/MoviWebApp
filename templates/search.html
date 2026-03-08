@@ -60,6 +60,11 @@
                     <input type="hidden" name="status" value="watchlist">
                     <button type="submit" class="btn btn-xs quick-add-btn">☐ Watchlist</button>
                 </form>
+                <form action="{{ url_for('add_movie', user_id=current_user.id) }}" method="post" class="card-quick-add">
+                    <input type="hidden" name="title" value="{{ film.title }}">
+                    <input type="hidden" name="status" value="currently_watching">
+                    <button type="submit" class="btn btn-xs quick-add-btn">▶ Currently Watching</button>
+                </form>
                 {% endif %}
             </div>
         </li>

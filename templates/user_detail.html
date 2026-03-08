@@ -99,6 +99,10 @@
        class="tab {{ 'active' if status_filter == 'watchlist' }}">
         ☐ Watchlist <span class="tab-count">{{ watchlist_count }}</span>
     </a>
+    <a href="{{ url_for('user_profile', username=user.username, sort=sort, status='currently_watching') }}"
+       class="tab {{ 'active' if status_filter == 'currently_watching' }}">
+        ▶ Currently Watching <span class="tab-count">{{ currently_watching_count }}</span>
+    </a>
 </div>
 
 <!-- Add movie form (owner only) -->
@@ -193,6 +197,7 @@
     <p>
         {% if status_filter == 'watchlist' %}No movies on your watchlist yet.
         {% elif status_filter == 'watched' %}No watched movies yet.
+        {% elif status_filter == 'currently_watching' %} {{ user.username }} is not watching any movies currently .
         {% else %}No movies yet.{% if current_user.is_authenticated and current_user.id == user.id %} Add one above!{% endif %}
         {% endif %}
     </p>

@@ -711,6 +711,8 @@ def user_profile(username):
                                          Movie.status == "watched").count()
     watchlist_count = Movie.query.filter(Movie.user_id == user_id,
                                          Movie.status == "watchlist").count()
+    currently_watching_count = Movie.query.filter(Movie.user_id == user_id,
+                                         Movie.status == "currently_watching").count()
     recommendations = []
     if current_user.is_authenticated and current_user.id == user_id:
         recommendations = data_manager.get_recommendations(user_id)
@@ -731,7 +733,8 @@ def user_profile(username):
         "user_detail.html",
         user=user, favorites=movies, sort=sort, status_filter=status_filter,
         all_count=all_count, watched_count=watched_count,
-        watchlist_count=watchlist_count, recommendations=recommendations,
+        watchlist_count=watchlist_count, currently_watching_count = currently_watching_count,
+        recommendations=recommendations,
         profile_stats=profile_stats, taste_match=taste_match,
         is_following=is_following, user_lists=user_lists,
         followers_count=len(user.followers),
@@ -1554,7 +1557,7 @@ def add_movie(user_id):
     film = get_or_create_film(title, meta)
     movie = Movie(
         title=title, user_id=user_id, film_id=film.id, rating=rating,
-        status=status if status in ("watched", "watchlist") else "watched",
+        status=status if status in ("watched", "watchlist", "currently_watching") else "watched",
         year=meta.get("year"), director=meta.get("director"),
         plot=meta.get("plot"), poster_url=meta.get("poster_url"),
         genre=meta.get("genre"),
