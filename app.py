@@ -1349,6 +1349,23 @@ def import_letterboxd():
 
     db.session.commit()
 
+    # Sync metadata from Film records that already existed before import
+    orphans = (db.session.query(Movie)
+               .join(Film, Movie.film_id == Film.id)
+               .filter(Movie.user_id == current_user.id,
+                       Movie.poster_url.is_(None),
+                       Film.poster_url.isnot(None))
+               .all())
+    for m in orphans:
+        film = db.session.get(Film, m.film_id)
+        m.poster_url = film.poster_url
+        m.plot       = film.plot or m.plot
+        m.director   = film.director or m.director
+        m.genre      = film.genre or m.genre
+        if not m.year:
+            m.year   = film.year
+    db.session.commit()
+
     parts = []
     if watched_imported:   parts.append(f"{watched_imported} watched")
     if watchlist_imported: parts.append(f"{watchlist_imported} watchlist")
