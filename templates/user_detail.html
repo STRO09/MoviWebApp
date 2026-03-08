@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block title %}{{ user.username }}'s Movies · MoviWebApp{% endblock %}
 
+{% block og_tags %}
+<meta property="og:title"       content="{{ user.username }}'s films on MoviWebApp">
+<meta property="og:description" content="{% if profile_stats.watched %}{{ profile_stats.watched }} films watched{% if profile_stats.avg_rating %} · {{ profile_stats.avg_rating }}★ avg{% endif %}{% if profile_stats.top_genres %} · loves {{ profile_stats.top_genres[0][0] }}{% if profile_stats.top_genres|length > 1 %} & {{ profile_stats.top_genres[1][0] }}{% endif %}{% endif %}{% else %}Tracking films on MoviWebApp{% endif %}">
+<meta property="og:image"       content="{{ avatar_url(user.username) }}">
+<meta property="og:url"         content="{{ request.url }}">
+{% endblock %}
+
 {% block content %}
 <!-- Profile header -->
 <div class="profile-header">
@@ -46,6 +53,21 @@
         <a href="{{ url_for('year_in_review', username=user.username, year=current_year) }}" class="btn btn-sm">{{ current_year }} Recap</a>
     </div>
 </div>
+
+{% if not current_user.is_authenticated %}
+<div class="loggedout-cta">
+    <div class="loggedout-cta-inner">
+        <div class="loggedout-cta-text">
+            <span class="loggedout-cta-title">Love {{ user.username }}'s taste?</span>
+            <span class="loggedout-cta-sub">Track your own films, find your people, and see how your taste compares.</span>
+        </div>
+        <div class="loggedout-cta-btns">
+            <a href="{{ url_for('register') }}" class="btn loggedout-join-btn">Join free →</a>
+            <a href="{{ url_for('login') }}" class="loggedout-login-link">Already have an account?</a>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <div class="page-header" style="margin-top:1.5rem">
     <div style="font-size:0"></div>

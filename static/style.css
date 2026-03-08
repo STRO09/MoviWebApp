@@ -2495,3 +2495,71 @@ input:focus, textarea:focus, select:focus {
     transition: color 0.15s;
 }
 .import-shortcut:hover { color: #60a5fa; }
+
+/* ============================================================
+   LOGGED-OUT PROFILE CTA
+   ============================================================ */
+.loggedout-cta {
+    margin: 1.5rem 0 0;
+    border-radius: 14px;
+    background: linear-gradient(135deg,
+        rgba(59,130,246,0.12) 0%,
+        rgba(139,92,246,0.08) 100%);
+    border: 1px solid rgba(59,130,246,0.25);
+    padding: 1.25rem 1.5rem;
+}
+
+.loggedout-cta-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.loggedout-cta-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1;
+    min-width: 200px;
+}
+
+.loggedout-cta-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #e8eaf0;
+}
+
+.loggedout-cta-sub {
+    font-size: 0.85rem;
+    color: #7a88aa;
+}
+
+.loggedout-cta-btns {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.loggedout-join-btn {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: background 0.15s, transform 0.1s;
+}
+.loggedout-join-btn:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
+}
+
+.loggedout-login-link {
+    font-size: 0.82rem;
+    color: #4a5a80;
+    text-decoration: underline;
+    white-space: nowrap;
+}
+.loggedout-login-link:hover { color: #93c5fd; }

@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block title %}{{ film.title }} · MoviWebApp{% endblock %}
 
+{% block og_tags %}
+<meta property="og:title"       content="{{ film.title }}{% if film.year %} ({{ film.year }}){% endif %} · MoviWebApp">
+<meta property="og:description" content="{% if film.plot %}{{ film.plot | truncate(180) }}{% else %}See what people think of {{ film.title }} on MoviWebApp.{% endif %}">
+{% if film.poster_url %}<meta property="og:image" content="{{ film.poster_url }}">{% endif %}
+<meta property="og:url"         content="{{ request.url }}">
+{% endblock %}
+
 {% block content %}
 {% if film.poster_url %}
 <div class="detail-backdrop" style="--poster: url('{{ film.poster_url }}')"></div>
