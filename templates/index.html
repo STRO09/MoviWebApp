@@ -30,13 +30,17 @@
             {% for movie in lst.movies %}
             <li class="inspo-poster-card">
                 <a href="{{ url_for('search', q=movie.title) }}">
-                    {% if movie.poster_url %}
-                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="inspo-poster-img" loading="lazy">
-                    {% else %}
-                    <div class="inspo-poster-empty">🎬</div>
-                    {% endif %}
-                    <span class="inspo-poster-title">{{ movie.title }}</span>
-                    <span class="inspo-poster-year">{{ movie.year }}</span>
+                    <div class="inspo-poster-wrap">
+                        {% if movie.poster_url %}
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="inspo-poster-img" loading="lazy">
+                        {% else %}
+                        <div class="inspo-poster-empty">🎬</div>
+                        {% endif %}
+                        <div class="inspo-poster-overlay">
+                            <span class="inspo-overlay-title">{{ movie.title }}</span>
+                            <span class="inspo-overlay-year">{{ movie.year }}</span>
+                        </div>
+                    </div>
                 </a>
             </li>
             {% endfor %}
