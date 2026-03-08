@@ -14,47 +14,40 @@
     {% if results %}
     <p class="search-count mt-1">{{ results | length }} title{{ 's' if results | length != 1 }} found</p>
     <ul class="movie-grid mt-2">
-        {% for movie, count in results %}
+        {% for film, count in results %}
         <li class="movie-card">
-            <a href="{{ url_for('movie_detail', movie_id=movie.id) }}" class="card-poster-link">
-                {% if movie.poster_url %}
-                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="card-poster">
+            <a href="{{ url_for('film_detail', film_id=film.id) }}" class="card-poster-link">
+                {% if film.poster_url %}
+                    <img src="{{ film.poster_url }}" alt="{{ film.title }}" class="card-poster">
                 {% else %}
                     <div class="card-poster card-poster-empty">🎬</div>
                 {% endif %}
                 <div class="card-poster-overlay">
-                    {% if movie.plot %}
-                        <p class="overlay-plot">{{ movie.plot | truncate(120) }}</p>
+                    {% if film.plot %}
+                        <p class="overlay-plot">{{ film.plot | truncate(120) }}</p>
                     {% endif %}
                 </div>
             </a>
             <div class="card-body">
                 <div class="card-title-row">
-                    <span class="card-title">{{ movie.title }}</span>
-                    {% if movie.year %}<span class="card-year">{{ movie.year }}</span>{% endif %}
+                    <span class="card-title">{{ film.title }}</span>
+                    {% if film.year %}<span class="card-year">{{ film.year }}</span>{% endif %}
                 </div>
-                {% if movie.director %}
-                <div class="card-director">{{ movie.director }}</div>
+                {% if film.director %}
+                <div class="card-director">{{ film.director }}</div>
                 {% endif %}
-                {% if movie.genre %}
+                {% if film.genre %}
                 <div class="genre-tags">
-                    {% for g in movie.genre.split(', ')[:3] %}
+                    {% for g in film.genre.split(', ')[:3] %}
                         <span class="genre-tag" data-genre="{{ g }}">{{ g }}</span>
                     {% endfor %}
                 </div>
                 {% endif %}
-                {% if movie.rating %}
-                <div class="stars">
-                    {% for i in range(1, 6) %}
-                        <span class="star {{ 'filled' if i <= movie.rating else '' }}">★</span>
-                    {% endfor %}
-                </div>
-                {% endif %}
                 <div class="search-result-user">
-                    {% if count > 1 %}
-                        on {{ count }} members' lists
+                    {% if count > 0 %}
+                        {{ count }} member{{ 's' if count != 1 }} logged this
                     {% else %}
-                        in <a href="{{ url_for('get_movies', user_id=movie.user.id) }}">{{ movie.user.username }}</a>'s list
+                        Not logged yet — be the first!
                     {% endif %}
                 </div>
             </div>
@@ -62,23 +55,25 @@
         {% endfor %}
     </ul>
 
-    {% elif omdb_fallback and omdb_fallback.poster_url %}
+    {% elif omdb_film %}
     <div class="omdb-fallback mt-2">
-        <p class="search-count">Not in anyone's list yet — here's what we found:</p>
+        <p class="search-count">Not in our database yet — here's what we found:</p>
         <div class="omdb-result mt-2">
-            <img src="{{ omdb_fallback.poster_url }}" alt="{{ q }}" class="omdb-poster">
+            {% if omdb_film.poster_url %}
+            <img src="{{ omdb_film.poster_url }}" alt="{{ q }}" class="omdb-poster">
+            {% endif %}
             <div class="omdb-info">
                 <h3 class="omdb-title">{{ q }}</h3>
-                {% if omdb_fallback.year %}<p class="omdb-year">{{ omdb_fallback.year }}</p>{% endif %}
-                {% if omdb_fallback.director %}<p class="omdb-director">Directed by <strong>{{ omdb_fallback.director }}</strong></p>{% endif %}
-                {% if omdb_fallback.genre %}
+                {% if omdb_film.year %}<p class="omdb-year">{{ omdb_film.year }}</p>{% endif %}
+                {% if omdb_film.director %}<p class="omdb-director">Directed by <strong>{{ omdb_film.director }}</strong></p>{% endif %}
+                {% if omdb_film.genre %}
                 <div class="genre-tags">
-                    {% for g in omdb_fallback.genre.split(', ')[:4] %}
+                    {% for g in omdb_film.genre.split(', ')[:4] %}
                         <span class="genre-tag" data-genre="{{ g }}">{{ g }}</span>
                     {% endfor %}
                 </div>
                 {% endif %}
-                {% if omdb_fallback.plot %}<p class="omdb-plot">{{ omdb_fallback.plot }}</p>{% endif %}
+                {% if omdb_film.plot %}<p class="omdb-plot">{{ omdb_film.plot }}</p>{% endif %}
                 {% if current_user.is_authenticated %}
                 <a href="{{ url_for('get_movies', user_id=current_user.id) }}" class="btn mt-1">
                     Add to my list →

@@ -112,7 +112,7 @@
                 <div class="user-card-header">
                     <img src="{{ avatar_url(user.username) }}" class="avatar" alt="{{ user.username }}">
                     <div class="user-card-info">
-                        <a href="{{ url_for('get_movies', user_id=user.id) }}" class="user-card-name">
+                        <a href="{{ url_for('user_profile', username=user.username) }}" class="user-card-name">
                             {{ user.username }}
                         </a>
                         <span class="movie-count">{{ user.movies | length }} movie{{ 's' if user.movies | length != 1 }}</span>
@@ -126,7 +126,7 @@
                 </div>
                 {% set posters = user.movies[:4] %}
                 {% if posters %}
-                <a href="{{ url_for('get_movies', user_id=user.id) }}" class="poster-strip">
+                <a href="{{ url_for('user_profile', username=user.username) }}" class="poster-strip">
                     {% for movie in posters %}
                         {% if movie.poster_url %}
                             <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="poster-thumb" title="{{ movie.title }}">
@@ -136,7 +136,7 @@
                     {% endfor %}
                 </a>
                 {% else %}
-                <a href="{{ url_for('get_movies', user_id=user.id) }}" class="poster-strip poster-strip-empty">
+                <a href="{{ url_for('user_profile', username=user.username) }}" class="poster-strip poster-strip-empty">
                     <span>No movies yet</span>
                 </a>
                 {% endif %}
@@ -175,7 +175,7 @@
                     {% endif %}
                     <span class="activity-user">
                         added by
-                        <a href="{{ url_for('get_movies', user_id=movie.user.id) }}">{{ movie.user.username }}</a>
+                        <a href="{{ url_for('user_profile', username=movie.user.username) }}">{{ movie.user.username }}</a>
                     </span>
                 </div>
                 {% if movie.rating %}

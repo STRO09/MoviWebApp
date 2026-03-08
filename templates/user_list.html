@@ -5,7 +5,7 @@
 <div class="page-header">
     <div>
         <h2>{{ lst.name }}</h2>
-        <p class="night-by">by <a href="{{ url_for('get_movies', user_id=lst.user.id) }}">{{ lst.user.username }}</a></p>
+        <p class="night-by">by <a href="{{ url_for('user_profile', username=lst.user.username) }}">{{ lst.user.username }}</a></p>
     </div>
 </div>
 

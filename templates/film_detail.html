@@ -51,13 +51,31 @@
         </div>
         {% endif %}
 
+        <!-- Friends who've seen this -->
+        {% if current_user.is_authenticated and friends_with_movie %}
+        <div class="detail-in-lists mt-2">
+            <h3 class="section-title-sm">Friends who've seen this</h3>
+            <div class="list-users">
+                {% for user, instance in friends_with_movie %}
+                <a href="{{ url_for('user_profile', username=user.username) }}" class="list-user-chip list-user-chip-friend">
+                    <img src="{{ avatar_url(user.username) }}" class="chip-avatar" alt="{{ user.username }}">
+                    {{ user.username }}
+                    {% if instance.rating %}
+                    <span class="chip-rating">{{ '★' * instance.rating }}</span>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Who has it -->
         {% if users_with_movie %}
         <div class="detail-in-lists mt-2">
-            <h3 class="section-title-sm">In {{ users_with_movie | length }} list{{ 's' if users_with_movie | length != 1 }}</h3>
+            <h3 class="section-title-sm">In {{ users_with_movie | length }} member list{{ 's' if users_with_movie | length != 1 }}</h3>
             <div class="list-users">
                 {% for user, instance in users_with_movie %}
-                <a href="{{ url_for('get_movies', user_id=user.id) }}" class="list-user-chip">
+                <a href="{{ url_for('user_profile', username=user.username) }}" class="list-user-chip">
                     <img src="{{ avatar_url(user.username) }}" class="chip-avatar" alt="{{ user.username }}">
                     {{ user.username }}
                     {% if instance.rating %}
@@ -141,7 +159,7 @@
         {% set liked = current_user.is_authenticated and review.likes | selectattr('user_id','equalto',current_user.id) | list | length > 0 %}
         <li class="review-card">
             <div class="review-header">
-                <a href="{{ url_for('get_movies', user_id=review.user.id) }}" class="review-author">
+                <a href="{{ url_for('user_profile', username=review.user.username) }}" class="review-author">
                     <img src="{{ avatar_url(review.user.username) }}" class="chip-avatar" alt="{{ review.user.username }}">
                     {{ review.user.username }}
                 </a>

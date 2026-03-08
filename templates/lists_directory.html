@@ -45,7 +45,7 @@
     <p>No lists yet.</p>
     {% if current_user.is_authenticated %}
     <p style="font-size:0.85rem; color:#5c6680; margin-top:0.4rem">
-        Create one from <a href="{{ url_for('get_movies', user_id=current_user.id) }}" style="color:#3b82f6">your profile</a>.
+        Create one from <a href="{{ url_for('user_profile', username=current_user.username) }}" style="color:#3b82f6">your profile</a>.
     </p>
     {% endif %}
 </div>

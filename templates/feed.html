@@ -16,11 +16,11 @@
     <ul class="suggest-grid">
         {% for u in suggested %}
         <li class="suggest-card">
-            <a href="{{ url_for('get_movies', user_id=u.id) }}" class="suggest-avatar-link">
+            <a href="{{ url_for('user_profile', username=u.username) }}" class="suggest-avatar-link">
                 <img src="{{ avatar_url(u.username) }}" class="suggest-avatar" alt="{{ u.username }}">
             </a>
             <div class="suggest-info">
-                <a href="{{ url_for('get_movies', user_id=u.id) }}" class="suggest-name">{{ u.username }}</a>
+                <a href="{{ url_for('user_profile', username=u.username) }}" class="suggest-name">{{ u.username }}</a>
                 <span class="suggest-count">{{ u.movies | length }} films</span>
             </div>
             <form action="{{ url_for('follow_user', user_id=u.id) }}" method="post">
@@ -67,7 +67,7 @@
                     {% endif %}
                     <span class="activity-user">
                         added by
-                        <a href="{{ url_for('get_movies', user_id=movie.user.id) }}">{{ movie.user.username }}</a>
+                        <a href="{{ url_for('user_profile', username=movie.user.username) }}">{{ movie.user.username }}</a>
                     </span>
                 </div>
                 {% if movie.rating %}
@@ -92,7 +92,7 @@
             {% for review in reviews %}
             <li class="review-card">
                 <div class="review-header">
-                    <a href="{{ url_for('get_movies', user_id=review.user.id) }}" class="review-author">
+                    <a href="{{ url_for('user_profile', username=review.user.username) }}" class="review-author">
                         <img src="{{ avatar_url(review.user.username) }}" class="chip-avatar" alt="{{ review.user.username }}">
                         {{ review.user.username }}
                     </a>

@@ -7,7 +7,7 @@
         <h2>{{ night.name }}</h2>
         {% if night.date %}<p class="night-date">{{ night.date }}</p>{% endif %}
         {% if night.description %}<p class="night-desc mt-1">{{ night.description }}</p>{% endif %}
-        <p class="night-by mt-half">Planned by <a href="{{ url_for('get_movies', user_id=night.creator.id) }}">{{ night.creator.username }}</a></p>
+        <p class="night-by mt-half">Planned by <a href="{{ url_for('user_profile', username=night.creator.username) }}">{{ night.creator.username }}</a></p>
     </div>
     <a href="{{ url_for('movie_nights') }}" class="btn btn-sm">All nights</a>
 </div>

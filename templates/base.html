@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header class="main-header">
+    <header class="main-header" id="main-header">
         <div class="header-left">
             <a href="{{ url_for('index') }}" class="logo">🎬 MoviWebApp</a>
         </div>
@@ -26,29 +26,44 @@
             </button>
         </form>
 
-        <nav class="main-nav">
+        <button class="nav-hamburger" id="nav-toggle" aria-label="Menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+
+        <nav class="main-nav" id="main-nav">
             <a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' }}">Home</a>
             <a href="{{ url_for('trending') }}" class="{{ 'active' if request.endpoint == 'trending' }}">Trending</a>
             <a href="{{ url_for('browse') }}" class="{{ 'active' if request.endpoint in ('browse','genre_page') }}">Browse</a>
             <a href="{{ url_for('movie_nights') }}" class="{{ 'active' if request.endpoint in ('movie_nights','movie_night_detail') }}">Nights</a>
             {% if current_user.is_authenticated %}
-                <a href="{{ url_for('get_movies', user_id=current_user.id) }}"
+                <a href="{{ url_for('user_profile', username=current_user.username) }}"
                    class="{{ 'active' if request.endpoint == 'get_movies' and request.view_args.user_id == current_user.id }}">My List</a>
                 <a href="{{ url_for('feed') }}" class="{{ 'active' if request.endpoint == 'feed' }}">Feed</a>
                 <a href="{{ url_for('challenges') }}" class="{{ 'active' if request.endpoint == 'challenges' }}">Challenges</a>
                 <a href="{{ url_for('notifications') }}" class="nav-bell {{ 'nav-bell-active' if request.endpoint == 'notifications' }}">
                     🔔{% if unread_notifications %}<span class="notif-badge">{{ unread_notifications }}</span>{% endif %}
                 </a>
-                <a href="{{ url_for('logout') }}" class="nav-user">
+                <a href="{{ url_for('user_profile', username=current_user.username) }}" class="nav-user">
                     <img src="{{ avatar_url(current_user.username) }}" class="nav-avatar" alt="{{ current_user.username }}">
                     {{ current_user.username }}
                 </a>
+                <a href="{{ url_for('logout') }}" class="nav-logout">Logout</a>
             {% else %}
                 <a href="{{ url_for('login') }}" class="{{ 'active' if request.endpoint == 'login' }}">Login</a>
                 <a href="{{ url_for('register') }}" class="btn-nav {{ 'active' if request.endpoint == 'register' }}">Register</a>
             {% endif %}
         </nav>
     </header>
+    <script>
+      (function(){
+        var btn = document.getElementById('nav-toggle');
+        var hdr = document.getElementById('main-header');
+        if(btn) btn.addEventListener('click', function(){
+          var open = hdr.classList.toggle('nav-open');
+          btn.setAttribute('aria-expanded', open);
+        });
+      })();
+    </script>
 
     <main class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}

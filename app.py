@@ -493,6 +493,15 @@ def get_movies(user_id):
     )
 
 
+@app.route("/u/<username>")
+def user_profile(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash("User not found.", "error")
+        return redirect(url_for("index"))
+    return redirect(url_for("get_movies", user_id=user.id))
+
+
 @app.route("/movies/<int:movie_id>")
 def movie_detail(movie_id):
     """Legacy route — redirect to global film page if possible."""
@@ -549,39 +558,49 @@ def film_detail(film_id):
     reviews   = Review.query.filter_by(movie_title=film.title)\
                             .order_by(Review.created_at.desc()).all()
     user_review = None
+    friends_with_movie = []
     if current_user.is_authenticated:
         user_review = Review.query.filter_by(
             movie_title=film.title, user_id=current_user.id).first()
+        followed_ids = {f.followed_id for f in
+                        Follow.query.filter_by(follower_id=current_user.id).all()}
+        friends_with_movie = [(u, m) for u, m in users_with_movie
+                              if u.id in followed_ids]
     return render_template("film_detail.html", film=film,
                            users_with_movie=users_with_movie,
+                           friends_with_movie=friends_with_movie,
                            similar=similar_films,
                            reviews=reviews, user_review=user_review)
 
 
 @app.route("/search")
 def search():
+    from sqlalchemy import func
     q = request.args.get("q", "").strip()
     results = []
-    omdb_fallback = None
+    omdb_film = None
     if q:
-        raw = (Movie.query
-               .filter(Movie.title.ilike(f"%{q}%"))
-               .order_by(Movie.title)
-               .all())
-        # Deduplicate by title — keep best (prefer entry with poster/plot)
-        seen, counts = {}, {}
-        for m in raw:
-            key = m.title.lower()
-            counts[key] = counts.get(key, 0) + 1
-            if key not in seen or (not seen[key].poster_url and m.poster_url):
-                seen[key] = m
-        results = sorted(
-            [(m, counts[m.title.lower()]) for m in seen.values()],
-            key=lambda x: x[0].title.lower()
-        )
-        if not raw:
-            omdb_fallback = data_manager.fetch_omdb_data(q)
-    return render_template("search.html", q=q, results=results, omdb_fallback=omdb_fallback)
+        films = (Film.query
+                 .filter(Film.title.ilike(f"%{q}%"))
+                 .order_by(Film.title)
+                 .all())
+        if films:
+            film_ids = [f.id for f in films]
+            counts = dict(
+                db.session.query(Movie.film_id, func.count(Movie.id))
+                .filter(Movie.film_id.in_(film_ids), Movie.status == "watched")
+                .group_by(Movie.film_id).all()
+            )
+            results = [(f, counts.get(f.id, 0)) for f in films]
+        else:
+            # Try OMDb; create a Film record so the user lands on a real page
+            meta = data_manager.fetch_omdb_data(q)
+            if meta and meta.get("poster_url"):
+                film = get_or_create_film(q, meta)
+                db.session.commit()
+                return redirect(url_for("film_detail", film_id=film.id))
+            omdb_film = meta
+    return render_template("search.html", q=q, results=results, omdb_film=omdb_film)
 
 
 @app.route("/film/<int:film_id>/review", methods=["POST"])
@@ -996,7 +1015,7 @@ def add_movie(user_id):
     )
     data_manager.add_movie(movie)
     flash(f"'{title}' added.", "success")
-    return redirect(url_for("get_movies", user_id=user_id))
+    return redirect(request.referrer or url_for("get_movies", user_id=user_id))
 
 
 @app.route("/users/<int:user_id>/movies/<int:movie_id>/toggle", methods=["POST"])
