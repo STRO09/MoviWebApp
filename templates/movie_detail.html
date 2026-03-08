@@ -109,4 +109,41 @@
     </ul>
 </section>
 {% endif %}
+
+<!-- Reviews -->
+<section class="reviews-section mt-3">
+    <h3 class="section-title">
+        Reviews
+        {% if reviews %}<span class="review-count">{{ reviews | length }}</span>{% endif %}
+    </h3>
+
+    {% if current_user.is_authenticated %}
+    <form action="{{ url_for('add_review', movie_id=movie.id) }}" method="post" class="review-form">
+        <textarea name="body" rows="3" maxlength="1000"
+            placeholder="What did you think?…">{{ user_review.body if user_review else '' }}</textarea>
+        <button type="submit" class="btn btn-sm">
+            {{ 'Update review' if user_review else 'Post review' }}
+        </button>
+    </form>
+    {% endif %}
+
+    {% if reviews %}
+    <ul class="review-list mt-2">
+        {% for review in reviews %}
+        <li class="review-card">
+            <div class="review-header">
+                <a href="{{ url_for('get_movies', user_id=review.user.id) }}" class="review-author">
+                    <span class="chip-avatar avatar-{{ loop.index0 % 8 }}">{{ review.user.username[0].upper() }}</span>
+                    {{ review.user.username }}
+                </a>
+                <span class="review-date">{{ review.created_at.strftime('%b %Y') }}</span>
+            </div>
+            <p class="review-body">{{ review.body }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted" style="font-size:0.85rem; margin-top:0.5rem;">No reviews yet. Be the first.</p>
+    {% endif %}
+</section>
 {% endblock %}

@@ -56,10 +56,9 @@
         const btn = document.getElementById('inspoToggle');
         const hidden = document.querySelectorAll('.inspo-row-hidden');
         const open = btn.dataset.open === 'true';
-        hidden.forEach(r => r.style.display = open ? '' : 'none');
+        hidden.forEach(r => r.style.display = open ? '' : 'block');
         btn.dataset.open = open ? 'false' : 'true';
         btn.textContent = open ? 'Show 5 more lists ↓' : 'Show less ↑';
-        if (open) btn.style.display = '';
     }
     </script>
 </section>

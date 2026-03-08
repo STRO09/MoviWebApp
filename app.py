@@ -12,7 +12,7 @@ from flask_login import (LoginManager, current_user, login_required,
 from sqlalchemy import text
 
 from data_manager import DataManager
-from models import Movie, User, db
+from models import Movie, Review, User, db
 
 app = Flask(__name__)
 
@@ -347,8 +347,15 @@ def movie_detail(movie_id):
     all_instances    = Movie.query.filter_by(title=movie.title).all()
     users_with_movie = [(db.session.get(User, m.user_id), m) for m in all_instances]
     similar          = data_manager.get_similar_movies(movie_id)
+    reviews          = Review.query.filter_by(movie_title=movie.title)\
+                              .order_by(Review.created_at.desc()).all()
+    user_review      = None
+    if current_user.is_authenticated:
+        user_review = Review.query.filter_by(
+            movie_title=movie.title, user_id=current_user.id).first()
     return render_template("movie_detail.html", movie=movie,
-                           users_with_movie=users_with_movie, similar=similar)
+                           users_with_movie=users_with_movie, similar=similar,
+                           reviews=reviews, user_review=user_review)
 
 
 @app.route("/search")
@@ -375,6 +382,33 @@ def search():
         if not raw:
             omdb_fallback = data_manager.fetch_omdb_data(q)
     return render_template("search.html", q=q, results=results, omdb_fallback=omdb_fallback)
+
+
+@app.route("/movies/<int:movie_id>/review", methods=["POST"])
+@login_required
+def add_review(movie_id):
+    movie = db.session.get(Movie, movie_id)
+    if not movie:
+        flash("Movie not found.", "error")
+        return redirect(url_for("index"))
+    body = request.form.get("body", "").strip()
+    if not body:
+        flash("Review cannot be empty.", "error")
+        return redirect(url_for("movie_detail", movie_id=movie_id))
+    if len(body) > 1000:
+        flash("Review too long (max 1000 characters).", "error")
+        return redirect(url_for("movie_detail", movie_id=movie_id))
+    existing = Review.query.filter_by(
+        movie_title=movie.title, user_id=current_user.id).first()
+    if existing:
+        existing.body = body
+        flash("Review updated.", "success")
+    else:
+        db.session.add(Review(user_id=current_user.id,
+                              movie_title=movie.title, body=body))
+        flash("Review posted.", "success")
+    db.session.commit()
+    return redirect(url_for("movie_detail", movie_id=movie_id))
 
 
 @app.route("/users/<int:user_id>/add_movie", methods=["POST"])

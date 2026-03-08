@@ -849,6 +849,54 @@ input:focus, textarea:focus, select:focus {
 }
 .inspo-more-btn:hover { border-color: #3b82f6; color: #60a5fa; }
 
+/* ============================================================
+   REVIEWS
+   ============================================================ */
+.reviews-section { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1.5rem; }
+
+.review-count {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.08);
+    border-radius: 999px; font-size: 0.72rem;
+    padding: 0 0.45rem; margin-left: 0.4rem;
+    color: #6b7a99; font-weight: 600; letter-spacing: 0;
+}
+
+.review-form { display: flex; flex-direction: column; gap: 0.5rem; max-width: 600px; }
+.review-form textarea {
+    resize: vertical; min-height: 72px;
+    font-size: 0.88rem; line-height: 1.5;
+}
+
+.review-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.review-card {
+    background: #111827;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 0.9rem 1rem;
+}
+
+.review-header {
+    display: flex; align-items: center;
+    gap: 0.6rem; margin-bottom: 0.55rem;
+    justify-content: space-between;
+}
+
+.review-author {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.85rem; font-weight: 600; color: #c5cde0;
+    transition: color 0.15s;
+}
+.review-author:hover { color: #60a5fa; }
+
+.review-date { font-size: 0.72rem; color: #3a4460; }
+
+.review-body {
+    font-size: 0.88rem; color: #9ca3af;
+    line-height: 1.65; white-space: pre-wrap;
+}
+
 /* OMDb fallback on search page */
 .omdb-result {
     display: flex;
