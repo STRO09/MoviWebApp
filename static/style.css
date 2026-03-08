@@ -648,6 +648,15 @@ input:focus, textarea:focus, select:focus {
 /* Auth forms */
 .auth-box { max-width: 420px; }
 
+.demo-login {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+}
+.demo-label { font-size: 0.78rem; color: #4a5a80; margin-bottom: 0.6rem; }
+.demo-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.demo-btns form { display: contents; }
+
 .back-link {
     display: inline-block; margin-top: 1rem;
     color: #6b7a99; font-size: 0.88rem;
@@ -1076,14 +1085,27 @@ input:focus, textarea:focus, select:focus {
 }
 
 .taste-badge {
-    display: inline-flex; align-items: center;
-    background: rgba(52,211,153,0.12);
-    color: #34d399;
-    border: 1px solid rgba(52,211,153,0.3);
+    display: inline-flex; align-items: center; gap: 0.3rem;
     border-radius: 999px;
-    padding: 0.25rem 0.7rem;
-    font-size: 0.78rem; font-weight: 700;
+    padding: 0.28rem 0.85rem;
+    font-size: 0.8rem; font-weight: 700;
     letter-spacing: 0.02em;
+    cursor: default;
+}
+.taste-badge-high {
+    background: rgba(52,211,153,0.14);
+    color: #34d399;
+    border: 1px solid rgba(52,211,153,0.35);
+}
+.taste-badge-mid {
+    background: rgba(251,191,36,0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(251,191,36,0.3);
+}
+.taste-badge-low {
+    background: rgba(148,163,184,0.1);
+    color: #94a3b8;
+    border: 1px solid rgba(148,163,184,0.2);
 }
 
 /* ============================================================
@@ -1180,41 +1202,78 @@ input:focus, textarea:focus, select:focus {
 
 .suggest-form .form-row { align-items: flex-end; }
 
-.night-films-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+.night-vote-hint { font-size: 0.8rem; }
+.night-films-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; }
 
 .night-film-card {
+    position: relative;
     display: flex; align-items: center; gap: 1rem;
     background: #111827;
     border: 1px solid rgba(255,255,255,0.06);
     border-radius: 12px;
-    padding: 0.75rem 1rem;
-    transition: border-color 0.15s;
+    padding: 0.85rem 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    overflow: hidden;
 }
 .night-film-card.user-voted { border-color: rgba(59,130,246,0.4); }
+.night-film-card.leading {
+    border-color: rgba(251,191,36,0.45);
+    box-shadow: 0 0 18px rgba(251,191,36,0.07);
+}
+
+.night-leading-badge {
+    position: absolute; top: 0; right: 0;
+    background: rgba(251,191,36,0.15);
+    color: #fbbf24;
+    font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em;
+    padding: 0.2rem 0.65rem;
+    border-radius: 0 12px 0 8px;
+    border-left: 1px solid rgba(251,191,36,0.3);
+    border-bottom: 1px solid rgba(251,191,36,0.3);
+}
 
 .night-film-poster {
-    width: 42px; height: 60px;
-    object-fit: cover; border-radius: 5px; flex-shrink: 0;
+    width: 44px; height: 62px;
+    object-fit: cover; border-radius: 6px; flex-shrink: 0;
 }
 .night-film-poster-empty {
-    width: 42px; height: 60px;
-    background: #0d1117; border-radius: 5px;
+    width: 44px; height: 62px;
+    background: #0d1117; border-radius: 6px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; flex-shrink: 0;
+    font-size: 1.1rem; flex-shrink: 0;
 }
 
-.night-film-info { flex: 1; }
-.night-film-title { font-size: 0.9rem; font-weight: 700; color: #c5cde0; display: block; }
-.night-film-by { font-size: 0.75rem; color: #3a4460; }
+.night-film-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.2rem; }
+.night-film-title { font-size: 0.92rem; font-weight: 700; color: #c5cde0; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.night-film-by { font-size: 0.73rem; color: #3a4460; }
+.night-film-by a { color: #4a5a80; }
+.night-film-by a:hover { color: #60a5fa; }
+
+.night-voter-list { display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.2rem; }
+.night-voter-chip {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: rgba(59,130,246,0.2);
+    color: #60a5fa;
+    font-size: 0.65rem; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(59,130,246,0.3);
+}
 
 .night-film-votes { flex-shrink: 0; }
 .vote-btn {
-    background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25);
-    border-radius: 8px; padding: 0.35rem 0.75rem;
-    font-size: 0.82rem; color: #60a5fa; cursor: pointer;
-    transition: background 0.15s; font-weight: 600;
+    background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 10px; padding: 0.4rem 0.9rem;
+    font-size: 0.85rem; color: #60a5fa; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s; font-weight: 700;
+    display: flex; align-items: center; gap: 0.35rem;
 }
-.vote-btn:hover, .vote-btn.voted { background: rgba(59,130,246,0.25); transform: none; box-shadow: none; filter: none; }
+.vote-btn:hover { background: rgba(59,130,246,0.18); border-color: rgba(59,130,246,0.4); transform: none; box-shadow: none; filter: none; }
+.vote-btn.voted {
+    background: rgba(59,130,246,0.28); border-color: #3b82f6;
+    color: #93c5fd; transform: none; box-shadow: none; filter: none;
+}
+.vote-num { font-variant-numeric: tabular-nums; }
 .vote-count { font-size: 0.82rem; color: #5c6680; }
 
 /* ============================================================

@@ -35,7 +35,11 @@
         {% set target_username = user.username %}
         {% include "_follow_btn.html" with context %}
         {% if taste_match %}
-        <span class="taste-badge" title="Taste match based on shared films and ratings">{{ taste_match }}% match</span>
+        <span class="taste-badge taste-badge-{{ 'high' if taste_match >= 70 else ('mid' if taste_match >= 40 else 'low') }}"
+              title="Taste match: based on films you've both seen and how similarly you rated them">
+            {% if taste_match >= 70 %}🔥{% elif taste_match >= 40 %}✨{% else %}🎲{% endif %}
+            {{ taste_match }}% taste match
+        </span>
         {% endif %}
         {% endif %}
         <a href="{{ url_for('diary', user_id=user.id) }}" class="btn btn-sm">Diary</a>

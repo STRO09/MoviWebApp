@@ -1,0 +1,6 @@
+<form hx-post="{{ url_for('vote_film', night_id=night_id, film_id=film.id) }}"
+      hx-swap="outerHTML" hx-target="closest form" style="display:inline">
+    <button type="submit" class="vote-btn {{ 'voted' if user_voted }}">
+        ▲ <span class="vote-num">{{ vote_count }}</span>
+    </button>
+</form>

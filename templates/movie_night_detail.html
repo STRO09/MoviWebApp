@@ -5,11 +5,11 @@
 <div class="night-detail-header">
     <div>
         <h2>{{ night.name }}</h2>
-        {% if night.date %}<p class="night-date">{{ night.date }}</p>{% endif %}
+        {% if night.date %}<p class="night-date">📅 {{ night.date }}</p>{% endif %}
         {% if night.description %}<p class="night-desc mt-1">{{ night.description }}</p>{% endif %}
         <p class="night-by mt-half">Planned by <a href="{{ url_for('user_profile', username=night.creator.username) }}">{{ night.creator.username }}</a></p>
     </div>
-    <a href="{{ url_for('movie_nights') }}" class="btn btn-sm">All nights</a>
+    <a href="{{ url_for('movie_nights') }}" class="btn btn-sm btn-ghost">← All nights</a>
 </div>
 
 <!-- Suggest a film -->
@@ -17,9 +17,9 @@
 <div class="suggest-form mt-2">
     <form action="{{ url_for('suggest_film', night_id=night.id) }}" method="post" class="form-row">
         <div class="form-group" style="flex:2">
-            <input type="text" name="title" placeholder="Suggest a film…" required maxlength="120">
+            <input type="text" name="title" placeholder="Suggest a film…" required maxlength="120" autofocus>
         </div>
-        <button type="submit" class="btn">Suggest</button>
+        <button type="submit" class="btn">+ Suggest</button>
     </form>
 </div>
 {% endif %}
@@ -27,11 +27,19 @@
 <!-- Film list with votes -->
 <section class="night-films-section mt-3">
     {% if sorted_films %}
-    <ul class="night-films-list">
+    {% set top_votes = sorted_films[0].votes | length if sorted_films else 0 %}
+    <p class="night-vote-hint text-muted">
+        {% if current_user.is_authenticated %}Vote for the film you want to watch — one vote per person.{% else %}<a href="{{ url_for('login') }}">Log in</a> to vote.{% endif %}
+    </p>
+    <ul class="night-films-list mt-1">
         {% for film in sorted_films %}
         {% set vote_count = film.votes | length %}
         {% set user_voted = current_user.is_authenticated and film.votes | selectattr('user_id','equalto',current_user.id) | list | length > 0 %}
-        <li class="night-film-card {{ 'user-voted' if user_voted }}">
+        {% set is_leading = top_votes > 0 and vote_count == top_votes %}
+        <li class="night-film-card {{ 'user-voted' if user_voted }} {{ 'leading' if is_leading }}">
+            {% if is_leading and top_votes > 0 %}
+            <div class="night-leading-badge">🏆 Leading</div>
+            {% endif %}
             {% if film.poster_url %}
             <img src="{{ film.poster_url }}" alt="{{ film.movie_title }}" class="night-film-poster">
             {% else %}
@@ -40,16 +48,20 @@
             <div class="night-film-info">
                 <span class="night-film-title">{{ film.movie_title }}</span>
                 {% if film.suggester %}
-                <span class="night-film-by">suggested by {{ film.suggester.username }}</span>
+                <span class="night-film-by">suggested by <a href="{{ url_for('user_profile', username=film.suggester.username) }}">{{ film.suggester.username }}</a></span>
+                {% endif %}
+                {% if vote_count > 0 %}
+                <span class="night-voter-list">
+                    {% for v in film.votes %}
+                        <span class="night-voter-chip" title="{{ v.voter.username }}">{{ v.voter.username[:1].upper() }}</span>
+                    {% endfor %}
+                </span>
                 {% endif %}
             </div>
             <div class="night-film-votes">
                 {% if current_user.is_authenticated %}
-                <form action="{{ url_for('vote_film', night_id=night.id, film_id=film.id) }}" method="post">
-                    <button type="submit" class="vote-btn {{ 'voted' if user_voted }}">
-                        ▲ {{ vote_count }}
-                    </button>
-                </form>
+                {% set night_id = night.id %}
+                {% include "_vote_btn.html" with context %}
                 {% else %}
                 <span class="vote-count">▲ {{ vote_count }}</span>
                 {% endif %}
@@ -59,7 +71,7 @@
     </ul>
     {% else %}
     <div class="empty-state">
-        <p>No films suggested yet.{% if current_user.is_authenticated %} Suggest one above!{% endif %}</p>
+        <p>🎬 No films suggested yet.{% if current_user.is_authenticated %} Be the first to suggest one above!{% else %} <a href="{{ url_for('login') }}">Log in</a> to suggest.{% endif %}</p>
     </div>
     {% endif %}
 </section>

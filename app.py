@@ -1104,6 +1104,13 @@ def vote_film(night_id, film_id):
             db.session.delete(v)
         db.session.add(MovieNightVote(user_id=current_user.id, film_id=film_id))
     db.session.commit()
+    if request.headers.get("HX-Request"):
+        user_voted = MovieNightVote.query.filter_by(
+            user_id=current_user.id, film_id=film_id).first() is not None
+        vote_count = MovieNightVote.query.filter_by(film_id=film_id).count()
+        return render_template("_vote_btn.html", film=film,
+                               user_voted=user_voted, vote_count=vote_count,
+                               night_id=night_id)
     return redirect(url_for("movie_night_detail", night_id=night_id))
 
 
@@ -1228,7 +1235,10 @@ def add_movie(user_id):
         genre=meta.get("genre"),
     )
     data_manager.add_movie(movie)
-    flash(f"'{title}' added.", "success")
+    if meta:
+        flash(f"'{title}' added.", "success")
+    else:
+        flash(f"'{title}' added — no metadata found. Double-check the title for a richer entry.", "info")
     return redirect(request.referrer or url_for("get_movies", user_id=user_id))
 
 
