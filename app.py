@@ -12,8 +12,8 @@ from flask_login import (LoginManager, current_user, login_required,
 from sqlalchemy import text
 
 from data_manager import DataManager
-from models import (Follow, Movie, MovieNight, MovieNightFilm, MovieNightVote,
-                    Review, ReviewLike, User, UserList, UserListItem, db)
+from models import (Film, Follow, Movie, MovieNight, MovieNightFilm, MovieNightVote,
+                    Notification, Review, ReviewLike, User, UserList, UserListItem, db)
 
 app = Flask(__name__)
 
@@ -56,7 +56,35 @@ def migrate_db():
         if "password_hash" not in existing_user:
             conn.execute(text("ALTER TABLE user ADD COLUMN password_hash VARCHAR(256)"))
 
+        existing_movie = {row[1] for row in conn.execute(text("PRAGMA table_info(movie)"))}
+        if "film_id" not in existing_movie:
+            conn.execute(text("ALTER TABLE movie ADD COLUMN film_id INTEGER REFERENCES film(id)"))
+
         conn.commit()
+
+
+def populate_films():
+    """Backfill Film records from existing Movie data and link movie.film_id."""
+    from sqlalchemy import func
+    rows = (db.session.query(Movie.title, Movie.year, Movie.director,
+                              Movie.plot, Movie.poster_url, Movie.genre)
+            .filter(Movie.status == 'watched')
+            .group_by(Movie.title)
+            .all())
+    changed = 0
+    for row in rows:
+        film = Film.query.filter_by(title=row.title).first()
+        if not film:
+            film = Film(title=row.title, year=row.year, director=row.director,
+                        plot=row.plot, poster_url=row.poster_url, genre=row.genre)
+            db.session.add(film)
+            db.session.flush()
+            changed += 1
+        # Link any unlinked Movie rows
+        Movie.query.filter_by(title=row.title, film_id=None)\
+                   .update({'film_id': film.id}, synchronize_session=False)
+    if changed:
+        db.session.commit()
 
 
 INSPIRATION_LISTS = [
@@ -250,7 +278,36 @@ def get_inspiration_with_posters():
     return lists
 
 
-# ── TEMPLATE HELPERS ──────────────────────────────────────────────────────────
+# ── TEMPLATE HELPERS & CONTEXT ────────────────────────────────────────────────
+
+@app.context_processor
+def inject_globals():
+    unread = 0
+    if current_user.is_authenticated:
+        unread = Notification.query.filter_by(
+            user_id=current_user.id, read=False).count()
+    return {"unread_notifications": unread}
+
+
+def get_or_create_film(title, meta=None):
+    film = Film.query.filter_by(title=title).first()
+    if not film:
+        if meta is None:
+            meta = data_manager.fetch_omdb_data(title)
+        film = Film(title=title, year=meta.get("year"),
+                    director=meta.get("director"), plot=meta.get("plot"),
+                    poster_url=meta.get("poster_url"), genre=meta.get("genre"))
+        db.session.add(film)
+        db.session.flush()
+    return film
+
+
+def create_notification(user_id, from_user_id, ntype, message, link=None):
+    if user_id == from_user_id:
+        return
+    db.session.add(Notification(user_id=user_id, from_user_id=from_user_id,
+                                type=ntype, message=message, link=link))
+
 
 @app.template_global()
 def avatar_url(username):
@@ -438,10 +495,15 @@ def get_movies(user_id):
 
 @app.route("/movies/<int:movie_id>")
 def movie_detail(movie_id):
+    """Legacy route — redirect to global film page if possible."""
     movie = db.session.get(Movie, movie_id)
     if not movie:
         flash("Movie not found.", "error")
         return redirect(url_for("index"))
+    film = Film.query.filter_by(title=movie.title).first()
+    if film:
+        return redirect(url_for("film_detail", film_id=film.id), 301)
+    # Fallback: render inline if Film record doesn't exist yet
     all_instances    = Movie.query.filter_by(title=movie.title).all()
     users_with_movie = [(db.session.get(User, m.user_id), m) for m in all_instances]
     similar          = data_manager.get_similar_movies(movie_id)
@@ -453,6 +515,46 @@ def movie_detail(movie_id):
             movie_title=movie.title, user_id=current_user.id).first()
     return render_template("movie_detail.html", movie=movie,
                            users_with_movie=users_with_movie, similar=similar,
+                           reviews=reviews, user_review=user_review)
+
+
+@app.route("/film/<int:film_id>")
+def film_detail(film_id):
+    film = db.session.get(Film, film_id)
+    if not film:
+        flash("Film not found.", "error")
+        return redirect(url_for("index"))
+    all_instances    = Movie.query.filter_by(title=film.title).all()
+    users_with_movie = [(db.session.get(User, m.user_id), m) for m in all_instances]
+    # similar: films shared by users who also have this film
+    shared_user_ids = [m.user_id for m in all_instances]
+    similar_films = []
+    if shared_user_ids:
+        from sqlalchemy import func
+        similar_titles = (
+            db.session.query(Movie.title, func.count(Movie.id).label("c"))
+            .filter(Movie.user_id.in_(shared_user_ids),
+                    Movie.title != film.title,
+                    Movie.status == "watched")
+            .group_by(Movie.title)
+            .order_by(func.count(Movie.id).desc())
+            .limit(12).all()
+        )
+        for row in similar_titles:
+            f = Film.query.filter_by(title=row.title).first()
+            if f and f.poster_url:
+                similar_films.append(f)
+            if len(similar_films) >= 8:
+                break
+    reviews   = Review.query.filter_by(movie_title=film.title)\
+                            .order_by(Review.created_at.desc()).all()
+    user_review = None
+    if current_user.is_authenticated:
+        user_review = Review.query.filter_by(
+            movie_title=film.title, user_id=current_user.id).first()
+    return render_template("film_detail.html", film=film,
+                           users_with_movie=users_with_movie,
+                           similar=similar_films,
                            reviews=reviews, user_review=user_review)
 
 
@@ -480,6 +582,109 @@ def search():
         if not raw:
             omdb_fallback = data_manager.fetch_omdb_data(q)
     return render_template("search.html", q=q, results=results, omdb_fallback=omdb_fallback)
+
+
+@app.route("/film/<int:film_id>/review", methods=["POST"])
+@login_required
+def add_film_review(film_id):
+    film = db.session.get(Film, film_id)
+    if not film:
+        return redirect(url_for("index"))
+    body = request.form.get("body", "").strip()
+    if not body:
+        flash("Review cannot be empty.", "error")
+        return redirect(url_for("film_detail", film_id=film_id))
+    if len(body) > 1000:
+        flash("Review too long (max 1000 characters).", "error")
+        return redirect(url_for("film_detail", film_id=film_id))
+    existing = Review.query.filter_by(
+        movie_title=film.title, user_id=current_user.id).first()
+    if existing:
+        existing.body = body
+        flash("Review updated.", "success")
+    else:
+        db.session.add(Review(user_id=current_user.id,
+                              movie_title=film.title, body=body))
+        flash("Review posted.", "success")
+    db.session.commit()
+    return redirect(url_for("film_detail", film_id=film_id))
+
+
+# ── NOTIFICATIONS ─────────────────────────────────────────────────────────────
+
+@app.route("/notifications")
+@login_required
+def notifications():
+    notifs = (Notification.query
+              .filter_by(user_id=current_user.id)
+              .order_by(Notification.created_at.desc())
+              .limit(50).all())
+    # Mark all read
+    Notification.query.filter_by(user_id=current_user.id, read=False)\
+                      .update({"read": True})
+    db.session.commit()
+    return render_template("notifications.html", notifs=notifs)
+
+
+# ── DISCOVERY ─────────────────────────────────────────────────────────────────
+
+@app.route("/trending")
+def trending():
+    from datetime import datetime as dt, timedelta
+    from sqlalchemy import func
+    cutoff = dt.utcnow() - timedelta(days=14)
+    rows = (db.session.query(Movie.title, func.count(Movie.id).label("c"))
+            .filter(Movie.date_added >= cutoff, Movie.status == "watched")
+            .group_by(Movie.title)
+            .order_by(func.count(Movie.id).desc())
+            .limit(30).all())
+    films = []
+    for row in rows:
+        f = Film.query.filter_by(title=row.title).first()
+        if f:
+            films.append((f, row.c))
+    return render_template("trending.html", films=films)
+
+
+@app.route("/browse")
+def browse():
+    from collections import Counter
+    gc = Counter()
+    for m in Movie.query.filter(Movie.genre.isnot(None)).all():
+        for g in m.genre.split(", "):
+            gc[g.strip()] += 1
+    genres = [(g, c) for g, c in gc.most_common() if c >= 2]
+    return render_template("browse.html", genres=genres)
+
+
+@app.route("/browse/<genre>")
+def genre_page(genre):
+    from sqlalchemy import func
+    rows = (db.session.query(Movie.title, func.count(Movie.id).label("c"))
+            .filter(Movie.genre.ilike(f"%{genre}%"), Movie.status == "watched")
+            .group_by(Movie.title)
+            .order_by(func.count(Movie.id).desc())
+            .all())
+    films = []
+    for row in rows:
+        f = Film.query.filter_by(title=row.title).first()
+        if f:
+            films.append((f, row.c))
+    return render_template("genre_page.html", genre=genre, films=films)
+
+
+# ── LISTS DIRECTORY ───────────────────────────────────────────────────────────
+
+@app.route("/lists")
+def lists_directory():
+    lists = (UserList.query
+             .order_by(UserList.created_at.desc())
+             .all())
+    lists_with_counts = sorted(
+        [(lst, len(lst.items)) for lst in lists],
+        key=lambda x: x[1], reverse=True
+    )
+    return render_template("lists_directory.html", lists=lists_with_counts)
 
 
 @app.route("/movies/<int:movie_id>/review", methods=["POST"])
@@ -525,6 +730,9 @@ def follow_user(user_id):
         flash(f"Unfollowed {target.username}.", "success")
     else:
         db.session.add(Follow(follower_id=current_user.id, followed_id=user_id))
+        create_notification(user_id, current_user.id, "follow",
+                            f"{current_user.username} started following you.",
+                            link=f"/users/{current_user.id}")
         flash(f"You're now following {target.username}! Their activity will appear in your feed.", "success")
     db.session.commit()
     return redirect(url_for("get_movies", user_id=user_id))
@@ -544,6 +752,11 @@ def like_review(review_id):
     else:
         db.session.add(ReviewLike(user_id=current_user.id, review_id=review_id))
         if review.user_id != current_user.id:
+            film = Film.query.filter_by(title=review.movie_title).first()
+            link = f"/film/{film.id}" if film else None
+            create_notification(review.user_id, current_user.id, "like",
+                                f"{current_user.username} liked your review of \"{review.movie_title}\".",
+                                link=link)
             flash(f"You liked {review.user.username}'s review of \"{review.movie_title}\".", "success")
     db.session.commit()
     return redirect(request.referrer or url_for("index"))
@@ -773,8 +986,9 @@ def add_movie(user_id):
         flash("Title too long (max 120 characters).", "error")
         return redirect(url_for("get_movies", user_id=user_id))
     meta = data_manager.fetch_omdb_data(title)
+    film = get_or_create_film(title, meta)
     movie = Movie(
-        title=title, user_id=user_id, rating=rating,
+        title=title, user_id=user_id, film_id=film.id, rating=rating,
         status=status if status in ("watched", "watchlist") else "watched",
         year=meta.get("year"), director=meta.get("director"),
         plot=meta.get("plot"), poster_url=meta.get("poster_url"),
@@ -878,4 +1092,5 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         migrate_db()
+        populate_films()
     app.run(debug=True)

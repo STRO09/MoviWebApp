@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}{{ genre }} Films · MoviWebApp{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2 style="font-size:1.5rem; font-weight:800; color:#fff">
+            <span class="genre-tag" data-genre="{{ genre }}" style="font-size:0.9rem; margin-right:0.5rem">{{ genre }}</span>
+        </h2>
+        <p style="font-size:0.82rem; color:#5c6680; margin-top:0.4rem">{{ films | length }} film{{ 's' if films | length != 1 }} logged by the community</p>
+    </div>
+    <a href="{{ url_for('browse') }}" class="btn btn-sm btn-ghost">All genres</a>
+</div>
+
+{% if films %}
+<ul class="movie-grid mt-2">
+    {% for film, count in films %}
+    <li class="movie-card">
+        <a href="{{ url_for('film_detail', film_id=film.id) }}" class="card-poster-link">
+            {% if film.poster_url %}
+                <img src="{{ film.poster_url }}" alt="{{ film.title }}" class="card-poster">
+            {% else %}
+                <div class="card-poster card-poster-empty">🎬</div>
+            {% endif %}
+            <div class="card-poster-overlay">
+                {% if film.plot %}
+                    <p class="overlay-plot">{{ film.plot | truncate(120) }}</p>
+                {% endif %}
+            </div>
+        </a>
+        <div class="card-body">
+            <div class="card-title-row">
+                <span class="card-title">{{ film.title }}</span>
+                {% if film.year %}<span class="card-year">{{ film.year }}</span>{% endif %}
+            </div>
+            {% if film.director %}<div class="card-director">{{ film.director }}</div>{% endif %}
+            <div class="search-result-user">{{ count }} member{{ 's' if count != 1 }} logged this</div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<div class="empty-state mt-3"><p>No films found for this genre.</p></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Trending · MoviWebApp{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2 style="font-size:1.5rem; font-weight:800; color:#fff">Trending</h2>
+        <p style="font-size:0.82rem; color:#5c6680; margin-top:0.2rem">Most logged in the last two weeks</p>
+    </div>
+</div>
+
+{% if films %}
+<ul class="trending-list mt-2">
+    {% for film, count in films %}
+    <li class="trending-item">
+        <span class="trending-rank">{{ loop.index }}</span>
+        <a href="{{ url_for('film_detail', film_id=film.id) }}" class="trending-poster-link">
+            {% if film.poster_url %}
+                <img src="{{ film.poster_url }}" alt="{{ film.title }}" class="trending-poster">
+            {% else %}
+                <div class="trending-poster trending-poster-empty">🎬</div>
+            {% endif %}
+        </a>
+        <div class="trending-info">
+            <a href="{{ url_for('film_detail', film_id=film.id) }}" class="trending-title">{{ film.title }}</a>
+            <div class="trending-meta">
+                {% if film.year %}<span>{{ film.year }}</span>{% endif %}
+                {% if film.director %}<span>{{ film.director }}</span>{% endif %}
+            </div>
+            {% if film.genre %}
+            <div class="genre-tags">
+                {% for g in film.genre.split(', ')[:3] %}
+                    <span class="genre-tag" data-genre="{{ g }}">{{ g }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="trending-count">
+            <span class="trending-count-num">{{ count }}</span>
+            <span class="trending-count-label">log{{ 's' if count != 1 }}</span>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<div class="empty-state mt-3">
+    <p>No recent activity yet.</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Community Lists · MoviWebApp{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2 style="font-size:1.5rem; font-weight:800; color:#fff">Community Lists</h2>
+        <p style="font-size:0.82rem; color:#5c6680; margin-top:0.2rem">{{ lists | length }} curated list{{ 's' if lists | length != 1 }}</p>
+    </div>
+</div>
+
+{% if lists %}
+<ul class="lists-dir-grid mt-2">
+    {% for lst, count in lists %}
+    <li class="lists-dir-card">
+        <a href="{{ url_for('view_list', list_id=lst.id) }}" class="lists-dir-link">
+            <!-- poster strip from first 4 items -->
+            <div class="lists-dir-posters">
+                {% for item in lst.items[:4] %}
+                    {% if item.poster_url %}
+                    <img src="{{ item.poster_url }}" alt="{{ item.movie_title }}" class="lists-dir-poster">
+                    {% else %}
+                    <div class="lists-dir-poster lists-dir-poster-empty">🎬</div>
+                    {% endif %}
+                {% endfor %}
+                {% if lst.items | length == 0 %}
+                <div class="lists-dir-poster lists-dir-poster-empty">🎬</div>
+                {% endif %}
+            </div>
+            <div class="lists-dir-info">
+                <span class="lists-dir-name">{{ lst.name }}</span>
+                <div class="lists-dir-meta">
+                    <img src="{{ avatar_url(lst.user.username) }}" class="chip-avatar" alt="{{ lst.user.username }}">
+                    <span>{{ lst.user.username }}</span>
+                    <span class="stats-sep">·</span>
+                    <span>{{ count }} film{{ 's' if count != 1 }}</span>
+                </div>
+            </div>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<div class="empty-state mt-3">
+    <p>No lists yet.</p>
+    {% if current_user.is_authenticated %}
+    <p style="font-size:0.85rem; color:#5c6680; margin-top:0.4rem">
+        Create one from <a href="{{ url_for('get_movies', user_id=current_user.id) }}" style="color:#3b82f6">your profile</a>.
+    </p>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

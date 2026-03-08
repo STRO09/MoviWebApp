@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Notifications · MoviWebApp{% endblock %}
+
+{% block content %}
+<h2 class="section-title">Notifications</h2>
+
+{% if notifs %}
+<ul class="notif-list mt-2">
+    {% for n in notifs %}
+    <li class="notif-item {{ 'notif-unread' if not n.read }}">
+        {% if n.from_user %}
+        <img src="{{ avatar_url(n.from_user.username) }}" class="notif-avatar" alt="{{ n.from_user.username }}">
+        {% else %}
+        <div class="notif-avatar notif-avatar-system">🎬</div>
+        {% endif %}
+        <div class="notif-body">
+            {% if n.link %}
+            <a href="{{ n.link }}" class="notif-message">{{ n.message }}</a>
+            {% else %}
+            <span class="notif-message">{{ n.message }}</span>
+            {% endif %}
+            <span class="notif-time">{{ n.created_at.strftime('%b %d · %H:%M') }}</span>
+        </div>
+        <div class="notif-type-icon">
+            {% if n.type == 'follow' %}👤
+            {% elif n.type == 'like' %}♥
+            {% elif n.type == 'review' %}✍
+            {% endif %}
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<div class="empty-state mt-3">
+    <p>No notifications yet.</p>
+    <p style="font-size:0.85rem; color:#5c6680; margin-top:0.4rem">Follow people and post reviews to start getting them.</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1441,6 +1441,209 @@ input:focus, textarea:focus, select:focus {
 }
 
 /* ============================================================
+   NOTIFICATION BELL & BADGE
+   ============================================================ */
+.nav-bell {
+    position: relative;
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    color: #a0aec0;
+    transition: background 0.15s, color 0.15s;
+    line-height: 1;
+}
+.nav-bell:hover, .nav-bell-active { background: rgba(255,255,255,0.08); color: #fff; }
+
+.notif-badge {
+    position: absolute;
+    top: 0; right: 0;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    border-radius: 999px;
+    min-width: 16px; height: 16px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 3px;
+    transform: translate(25%, -25%);
+    line-height: 1;
+}
+
+/* ============================================================
+   NOTIFICATIONS PAGE
+   ============================================================ */
+.notif-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.notif-item {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.9rem 1.1rem;
+    background: #0e1420;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    transition: border-color 0.15s;
+}
+.notif-unread { border-color: rgba(59,130,246,0.3); background: #0d1628; }
+.notif-item:hover { border-color: rgba(59,130,246,0.3); }
+
+.notif-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    object-fit: cover; flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+.notif-avatar-system {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: #111827; display: flex; align-items: center;
+    justify-content: center; font-size: 1rem; flex-shrink: 0;
+}
+
+.notif-body { flex: 1; display: flex; flex-direction: column; gap: 0.2rem; }
+.notif-message { font-size: 0.88rem; color: #c5cde0; line-height: 1.4; }
+.notif-message:hover { color: #60a5fa; }
+.notif-time { font-size: 0.72rem; color: #3a4460; }
+
+.notif-type-icon { font-size: 1rem; flex-shrink: 0; }
+
+/* ============================================================
+   TRENDING PAGE
+   ============================================================ */
+.trending-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+
+.trending-item {
+    display: flex; align-items: center; gap: 1.1rem;
+    padding: 0.75rem 1rem;
+    background: #0e1420;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    transition: border-color 0.15s, transform 0.15s;
+}
+.trending-item:hover { border-color: rgba(59,130,246,0.25); transform: translateX(3px); }
+
+.trending-rank {
+    font-size: 1.1rem; font-weight: 900;
+    color: rgba(255,255,255,0.08);
+    width: 28px; text-align: right; flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+.trending-item:nth-child(1) .trending-rank { color: #fbbf24; }
+.trending-item:nth-child(2) .trending-rank { color: #9ca3af; }
+.trending-item:nth-child(3) .trending-rank { color: #cd7c2f; }
+
+.trending-poster-link { flex-shrink: 0; }
+.trending-poster {
+    width: 42px; height: 60px; object-fit: cover;
+    border-radius: 6px; display: block;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+.trending-poster-empty {
+    width: 42px; height: 60px; border-radius: 6px;
+    background: #0d1117; display: flex; align-items: center;
+    justify-content: center; font-size: 1rem;
+}
+
+.trending-info { flex: 1; min-width: 0; }
+.trending-title {
+    font-size: 0.95rem; font-weight: 700; color: #e8eaf0;
+    display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.trending-title:hover { color: #60a5fa; }
+.trending-meta { font-size: 0.75rem; color: #5c6680; display: flex; gap: 0.5rem; margin: 0.2rem 0 0.3rem; }
+
+.trending-count { flex-shrink: 0; text-align: right; }
+.trending-count-num { font-size: 1.4rem; font-weight: 900; color: #3b82f6; display: block; line-height: 1; }
+.trending-count-label { font-size: 0.68rem; color: #3a4460; text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* ============================================================
+   BROWSE / GENRE PAGES
+   ============================================================ */
+.genre-browse-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+}
+
+.genre-browse-card {
+    display: flex; flex-direction: column; gap: 0.25rem;
+    padding: 1rem 1.1rem;
+    background: #0e1420;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    transition: transform 0.18s ease, border-color 0.18s, box-shadow 0.18s;
+    cursor: pointer;
+}
+.genre-browse-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+}
+/* Inherit genre tag color for the border accent */
+.genre-browse-card[data-genre="Action"]    { border-color: rgba(248,113,113,.25); }
+.genre-browse-card[data-genre="Drama"]     { border-color: rgba(96,165,250,.25); }
+.genre-browse-card[data-genre="Comedy"]    { border-color: rgba(251,191,36,.25); }
+.genre-browse-card[data-genre="Horror"]    { border-color: rgba(167,139,250,.25); }
+.genre-browse-card[data-genre="Sci-Fi"]    { border-color: rgba(56,189,248,.25); }
+.genre-browse-card[data-genre="Animation"] { border-color: rgba(52,211,153,.25); }
+.genre-browse-card[data-genre="Crime"]     { border-color: rgba(251,146,60,.25); }
+.genre-browse-card[data-genre="Thriller"]  { border-color: rgba(129,140,248,.25); }
+.genre-browse-card[data-genre="Romance"]   { border-color: rgba(244,114,182,.25); }
+.genre-browse-card[data-genre="Adventure"] { border-color: rgba(74,222,128,.25); }
+.genre-browse-card[data-genre="Fantasy"]   { border-color: rgba(192,132,252,.25); }
+.genre-browse-card[data-genre="War"]       { border-color: rgba(156,163,175,.25); }
+.genre-browse-card[data-genre="Western"]   { border-color: rgba(249,115,22,.25); }
+
+.genre-browse-name { font-size: 0.95rem; font-weight: 700; color: #e8eaf0; }
+.genre-browse-count { font-size: 0.75rem; color: #5c6680; }
+
+/* ============================================================
+   LISTS DIRECTORY
+   ============================================================ */
+.lists-dir-grid {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.85rem;
+}
+
+.lists-dir-card {
+    background: #0e1420;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+}
+.lists-dir-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+    border-color: rgba(59,130,246,0.2);
+}
+
+.lists-dir-link { display: block; }
+
+.lists-dir-posters {
+    display: flex; height: 110px;
+    background: #070b14;
+}
+.lists-dir-poster {
+    flex: 1; object-fit: cover; object-position: top;
+    min-width: 0; display: block;
+}
+.lists-dir-poster-empty {
+    flex: 1; display: flex; align-items: center;
+    justify-content: center; font-size: 1.8rem;
+    color: #1e2a40; background: #0d1117;
+}
+
+.lists-dir-info {
+    padding: 0.8rem 1rem;
+}
+.lists-dir-name {
+    font-size: 0.95rem; font-weight: 700;
+    color: #e8eaf0; display: block; margin-bottom: 0.4rem;
+}
+.lists-dir-meta {
+    display: flex; align-items: center; gap: 0.4rem;
+    font-size: 0.75rem; color: #5c6680;
+}
+
+/* ============================================================
    SUGGESTED USERS (feed)
    ============================================================ */
 .suggest-section {

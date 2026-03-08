@@ -91,10 +91,37 @@ class Review(db.Model):
                                   cascade="all, delete-orphan", lazy=True)
 
 
+class Film(db.Model):
+    """Global canonical film record — exists independently of any user's list."""
+    id         = db.Column(db.Integer, primary_key=True)
+    title      = db.Column(db.String(120), nullable=False, unique=True, index=True)
+    year       = db.Column(db.String(10), nullable=True)
+    director   = db.Column(db.String(120), nullable=True)
+    plot       = db.Column(db.Text, nullable=True)
+    poster_url = db.Column(db.String(300), nullable=True)
+    genre      = db.Column(db.String(200), nullable=True)
+    imdb_id    = db.Column(db.String(20), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class Notification(db.Model):
+    id           = db.Column(db.Integer, primary_key=True)
+    user_id      = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    from_user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
+    type         = db.Column(db.String(30), nullable=False)   # follow | like | review
+    message      = db.Column(db.String(300), nullable=False)
+    link         = db.Column(db.String(300), nullable=True)
+    read         = db.Column(db.Boolean, default=False, nullable=False)
+    created_at   = db.Column(db.DateTime, default=datetime.utcnow)
+    user         = db.relationship("User", foreign_keys=[user_id], backref="notifications")
+    from_user    = db.relationship("User", foreign_keys=[from_user_id])
+
+
 class Movie(db.Model):
     id         = db.Column(db.Integer, primary_key=True)
     title      = db.Column(db.String(120), nullable=False)
     user_id    = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    film_id    = db.Column(db.Integer, db.ForeignKey("film.id"), nullable=True)
     rating     = db.Column(db.Integer, nullable=True)
     year       = db.Column(db.String(10), nullable=True)
     director   = db.Column(db.String(120), nullable=True)
@@ -104,3 +131,4 @@ class Movie(db.Model):
     status     = db.Column(db.String(20), default='watched')
     date_added = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
     user       = db.relationship("User", backref="movies")
+    film       = db.relationship("Film", backref="user_movies")
