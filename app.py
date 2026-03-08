@@ -454,15 +454,24 @@ def index():
                            inspiration=inspiration, hero=hero)
 
 
-@app.route("/users/<int:user_id>")
-def get_movies(user_id):
-    user = db.session.get(User, user_id)
+_PROFILE_PER_PAGE = 24
+
+
+@app.route("/u/<username>")
+def user_profile(username):
+    user = User.query.filter_by(username=username).first()
     if user is None:
         flash("User not found.", "error")
         return redirect(url_for("index"))
+    user_id       = user.id
     sort          = request.args.get("sort", "title")
     status_filter = request.args.get("status", "")
-    movies        = data_manager.get_movies(user_id, sort=sort, status=status_filter)
+    page          = request.args.get("page", 1, type=int)
+    all_sorted    = data_manager.get_movies(user_id, sort=sort, status=status_filter)
+    total         = len(all_sorted)
+    total_pages   = max(1, (total + _PROFILE_PER_PAGE - 1) // _PROFILE_PER_PAGE)
+    page          = max(1, min(page, total_pages))
+    movies        = all_sorted[(page - 1) * _PROFILE_PER_PAGE : page * _PROFILE_PER_PAGE]
     all_count       = Movie.query.filter_by(user_id=user_id).count()
     watched_count   = Movie.query.filter(Movie.user_id == user_id,
                                          Movie.status == "watched").count()
@@ -471,10 +480,10 @@ def get_movies(user_id):
     recommendations = []
     if current_user.is_authenticated and current_user.id == user_id:
         recommendations = data_manager.get_recommendations(user_id)
-    all_movies   = Movie.query.filter_by(user_id=user_id).all()
+    all_movies    = Movie.query.filter_by(user_id=user_id).all()
     profile_stats = compute_profile_stats(all_movies)
-    taste_match  = 0
-    is_following = False
+    taste_match   = 0
+    is_following  = False
     if current_user.is_authenticated and current_user.id != user_id:
         taste_match  = compute_taste_match(
             Movie.query.filter_by(user_id=current_user.id).all(), all_movies)
@@ -490,16 +499,19 @@ def get_movies(user_id):
         is_following=is_following, user_lists=user_lists,
         followers_count=len(user.followers),
         following_count=len(user.following),
+        page=page, total_pages=total_pages,
     )
 
 
-@app.route("/u/<username>")
-def user_profile(username):
-    user = User.query.filter_by(username=username).first()
+@app.route("/users/<int:user_id>")
+def get_movies(user_id):
+    """Legacy numeric URL — redirect to canonical pretty URL."""
+    user = db.session.get(User, user_id)
     if user is None:
         flash("User not found.", "error")
         return redirect(url_for("index"))
-    return redirect(url_for("get_movies", user_id=user.id))
+    args = request.args.to_dict()
+    return redirect(url_for("user_profile", username=user.username, **args), 301)
 
 
 @app.route("/movies/<int:movie_id>")
@@ -576,22 +588,25 @@ def film_detail(film_id):
 @app.route("/search")
 def search():
     from sqlalchemy import func
-    q = request.args.get("q", "").strip()
-    results = []
-    omdb_film = None
+    q    = request.args.get("q", "").strip()
+    page = request.args.get("page", 1, type=int)
+    results    = []
+    omdb_film  = None
+    pagination = None
     if q:
-        films = (Film.query
-                 .filter(Film.title.ilike(f"%{q}%"))
-                 .order_by(Film.title)
-                 .all())
-        if films:
-            film_ids = [f.id for f in films]
+        film_pag = (Film.query
+                    .filter(Film.title.ilike(f"%{q}%"))
+                    .order_by(Film.title)
+                    .paginate(page=page, per_page=20, error_out=False))
+        if film_pag.items:
+            pagination = film_pag
+            film_ids = [f.id for f in film_pag.items]
             counts = dict(
                 db.session.query(Movie.film_id, func.count(Movie.id))
                 .filter(Movie.film_id.in_(film_ids), Movie.status == "watched")
                 .group_by(Movie.film_id).all()
             )
-            results = [(f, counts.get(f.id, 0)) for f in films]
+            results = [(f, counts.get(f.id, 0)) for f in film_pag.items]
         else:
             # Try OMDb; create a Film record so the user lands on a real page
             meta = data_manager.fetch_omdb_data(q)
@@ -600,7 +615,8 @@ def search():
                 db.session.commit()
                 return redirect(url_for("film_detail", film_id=film.id))
             omdb_film = meta
-    return render_template("search.html", q=q, results=results, omdb_film=omdb_film)
+    return render_template("search.html", q=q, results=results,
+                           omdb_film=omdb_film, pagination=pagination)
 
 
 @app.route("/film/<int:film_id>/review", methods=["POST"])
@@ -679,17 +695,23 @@ def browse():
 @app.route("/browse/<genre>")
 def genre_page(genre):
     from sqlalchemy import func
+    _PER = 24
+    page = request.args.get("page", 1, type=int)
     rows = (db.session.query(Movie.title, func.count(Movie.id).label("c"))
             .filter(Movie.genre.ilike(f"%{genre}%"), Movie.status == "watched")
             .group_by(Movie.title)
             .order_by(func.count(Movie.id).desc())
             .all())
-    films = []
+    all_films = []
     for row in rows:
         f = Film.query.filter_by(title=row.title).first()
         if f:
-            films.append((f, row.c))
-    return render_template("genre_page.html", genre=genre, films=films)
+            all_films.append((f, row.c))
+    total_pages = max(1, (len(all_films) + _PER - 1) // _PER)
+    page = max(1, min(page, total_pages))
+    films = all_films[(page - 1) * _PER : page * _PER]
+    return render_template("genre_page.html", genre=genre, films=films,
+                           page=page, total_pages=total_pages, total=len(all_films))
 
 
 # ── LISTS DIRECTORY ───────────────────────────────────────────────────────────

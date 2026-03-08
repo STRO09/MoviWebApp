@@ -58,15 +58,15 @@
 
 <!-- Status tabs -->
 <div class="tab-bar mt-1">
-    <a href="{{ url_for('get_movies', user_id=user.id, sort=sort) }}"
+    <a href="{{ url_for('user_profile', username=user.username, sort=sort) }}"
        class="tab {{ 'active' if not status_filter }}">
         All <span class="tab-count">{{ all_count }}</span>
     </a>
-    <a href="{{ url_for('get_movies', user_id=user.id, sort=sort, status='watched') }}"
+    <a href="{{ url_for('user_profile', username=user.username, sort=sort, status='watched') }}"
        class="tab {{ 'active' if status_filter == 'watched' }}">
         ✓ Watched <span class="tab-count">{{ watched_count }}</span>
     </a>
-    <a href="{{ url_for('get_movies', user_id=user.id, sort=sort, status='watchlist') }}"
+    <a href="{{ url_for('user_profile', username=user.username, sort=sort, status='watchlist') }}"
        class="tab {{ 'active' if status_filter == 'watchlist' }}">
         ☐ Watchlist <span class="tab-count">{{ watchlist_count }}</span>
     </a>
@@ -177,6 +177,22 @@
         {% else %}No movies yet.{% if current_user.is_authenticated and current_user.id == user.id %} Add one above!{% endif %}
         {% endif %}
     </p>
+</div>
+{% endif %}
+
+{% if total_pages > 1 %}
+<div class="pagination mt-2">
+    {% if page > 1 %}
+    <a href="{{ url_for('user_profile', username=user.username, sort=sort, status=status_filter, page=page-1) }}" class="page-btn">← Prev</a>
+    {% else %}
+    <span class="page-btn page-btn-disabled">← Prev</span>
+    {% endif %}
+    <span class="page-info">{{ page }} / {{ total_pages }}</span>
+    {% if page < total_pages %}
+    <a href="{{ url_for('user_profile', username=user.username, sort=sort, status=status_filter, page=page+1) }}" class="page-btn">Next →</a>
+    {% else %}
+    <span class="page-btn page-btn-disabled">Next →</span>
+    {% endif %}
 </div>
 {% endif %}
 
