@@ -23,7 +23,7 @@ SEED_DATA = {
             ("In the Mood for Love",     4, "watchlist"),
         ]
     },
-    "mikelsc": {                       # Sci-fi & cerebral action
+    "voidpilot": {                     # Sci-fi & cerebral action
         "movies": [
             ("Inception",               5, "watched"),
             ("The Dark Knight",         5, "watched"),
@@ -34,7 +34,7 @@ SEED_DATA = {
             ("Ex Machina",              4, "watchlist"),
         ]
     },
-    "alicewebb": {                     # Christopher Nolan obsessive
+    "nolancore": {                     # Christopher Nolan obsessive
         "movies": [
             ("The Dark Knight",         5, "watched"),
             ("Inception",               5, "watched"),
@@ -44,7 +44,7 @@ SEED_DATA = {
             ("Dunkirk",                 3, "watched"),
         ]
     },
-    "robbiek": {                       # Crime & neo-noir
+    "pulpkings": {                     # Crime & neo-noir
         "movies": [
             ("Pulp Fiction",            5, "watched"),
             ("Fight Club",              4, "watched"),
@@ -55,7 +55,7 @@ SEED_DATA = {
             ("Se7en",                   4, "watched"),
         ]
     },
-    "carolv": {                        # International & arthouse
+    "worldframes": {                   # International & arthouse
         "movies": [
             ("Parasite",                5, "watched"),
             ("Everything Everywhere All at Once", 5, "watched"),
@@ -65,7 +65,7 @@ SEED_DATA = {
             ("City of God",             5, "watched"),
         ]
     },
-    "spacedave": {                     # Sci-fi geek
+    "darkstardave": {                  # Sci-fi geek
         "movies": [
             ("Blade Runner 2049",       5, "watched"),
             ("2001: A Space Odyssey",   5, "watched"),
@@ -77,7 +77,7 @@ SEED_DATA = {
             ("Annihilation",            4, "watchlist"),
         ]
     },
-    "emmajh": {                        # Horror & thriller
+    "screamjane": {                    # Horror & thriller
         "movies": [
             ("Hereditary",              5, "watched"),
             ("Get Out",                 5, "watched"),
@@ -89,7 +89,7 @@ SEED_DATA = {
             ("Nope",                    4, "watchlist"),
         ]
     },
-    "franklyb": {                      # Action & blockbusters
+    "furyroaded": {                    # Action & blockbusters
         "movies": [
             ("Mad Max: Fury Road",      5, "watched"),
             ("John Wick",               5, "watched"),
@@ -100,7 +100,7 @@ SEED_DATA = {
             ("Atomic Blonde",           3, "watchlist"),
         ]
     },
-    "graceli": {                       # Animation & family
+    "ghiblicore": {                    # Animation & family
         "movies": [
             ("Spirited Away",           5, "watched"),
             ("The Lion King",           4, "watched"),
@@ -112,7 +112,7 @@ SEED_DATA = {
             ("Howl's Moving Castle",    4, "watchlist"),
         ]
     },
-    "henrymb": {                       # Classic Hollywood golden age
+    "goldenager": {                    # Classic Hollywood golden age
         "movies": [
             ("Casablanca",              5, "watched"),
             ("Singin' in the Rain",     5, "watched"),
@@ -123,7 +123,7 @@ SEED_DATA = {
             ("Sunset Blvd.",            4, "watched"),
         ]
     },
-    "irisw": {                         # Romance & coming-of-age drama
+    "softcinema": {                    # Romance & coming-of-age drama
         "movies": [
             ("Before Sunrise",          5, "watched"),
             ("Lost in Translation",     5, "watched"),
@@ -134,7 +134,7 @@ SEED_DATA = {
             ("Call Me by Your Name",    4, "watchlist"),
         ]
     },
-    "jakemcc": {                       # Comedy first
+    "laughreels": {                    # Comedy first
         "movies": [
             ("The Grand Budapest Hotel", 5, "watched"),
             ("Superbad",                4, "watched"),
@@ -146,7 +146,7 @@ SEED_DATA = {
             ("Game Night",              3, "watchlist"),
         ]
     },
-    "katebr": {                        # Biopics & true stories
+    "truestorykat": {                  # Biopics & true stories
         "movies": [
             ("Bohemian Rhapsody",       3, "watched"),
             ("Whiplash",                5, "watched"),
@@ -157,7 +157,7 @@ SEED_DATA = {
             ("Sully",                   3, "watched"),
         ]
     },
-    "lenavoss": {                      # Indie & coming-of-age
+    "a24head": {                       # Indie & coming-of-age
         "movies": [
             ("Boyhood",                 5, "watched"),
             ("Lady Bird",               5, "watched"),
@@ -168,7 +168,7 @@ SEED_DATA = {
             ("Mid90s",                  3, "watchlist"),
         ]
     },
-    "marcusd": {                       # Westerns & epics
+    "spaghettimarc": {                 # Westerns & epics
         "movies": [
             ("Once Upon a Time in the West", 5, "watched"),
             ("The Good the Bad and the Ugly", 5, "watched"),
@@ -179,7 +179,7 @@ SEED_DATA = {
             ("Tombstone",               4, "watchlist"),
         ]
     },
-    "ninabell": {                      # Musicals & feel-good
+    "lalalaland": {                    # Musicals & feel-good
         "movies": [
             ("La La Land",              5, "watched"),
             ("Whiplash",                5, "watched"),
@@ -190,7 +190,7 @@ SEED_DATA = {
             ("Mamma Mia",               3, "watched"),
         ]
     },
-    "oscarbt": {                       # War films
+    "warreels": {                      # War films
         "movies": [
             ("Saving Private Ryan",     5, "watched"),
             ("Apocalypse Now",          5, "watched"),
@@ -201,7 +201,7 @@ SEED_DATA = {
             ("Letters from Iwo Jima",   4, "watched"),
         ]
     },
-    "petrak": {                        # Mystery & neo-noir
+    "chiaroscuro": {                   # Mystery & neo-noir
         "movies": [
             ("Chinatown",               5, "watched"),
             ("The Big Lebowski",        4, "watched"),
@@ -212,7 +212,7 @@ SEED_DATA = {
             ("Blue Velvet",             3, "watchlist"),
         ]
     },
-    "quinnrx": {                       # Superhero & comic book
+    "capepilled": {                    # Superhero & comic book
         "movies": [
             ("The Dark Knight",         5, "watched"),
             ("Avengers: Infinity War",  5, "watched"),
@@ -223,7 +223,7 @@ SEED_DATA = {
             ("Doctor Strange in the Multiverse of Madness", 3, "watchlist"),
         ]
     },
-    "ryanoc": {                        # Sports dramas
+    "rushfanatic": {                   # Sports dramas
         "movies": [
             ("Rocky",                   5, "watched"),
             ("Moneyball",               4, "watched"),
@@ -234,7 +234,7 @@ SEED_DATA = {
             ("Cool Runnings",           3, "watched"),
         ]
     },
-    "sofiamb": {                       # Period & literary adaptations
+    "periodpiece": {                   # Period & literary adaptations
         "movies": [
             ("Pride and Prejudice",     5, "watched"),
             ("Little Women",            4, "watched"),
@@ -245,7 +245,7 @@ SEED_DATA = {
             ("The Great Gatsby",        3, "watchlist"),
         ]
     },
-    "tompayne": {                      # Mind-benders & time travel
+    "primerhead": {                    # Mind-benders & time travel
         "movies": [
             ("Primer",                  4, "watched"),
             ("Predestination",          5, "watched"),
@@ -256,7 +256,7 @@ SEED_DATA = {
             ("The Butterfly Effect",    3, "watched"),
         ]
     },
-    "umapark": {                       # Korean & Asian cinema
+    "oldboyfan": {                     # Korean & Asian cinema
         "movies": [
             ("Parasite",                5, "watched"),
             ("Oldboy",                  5, "watched"),
