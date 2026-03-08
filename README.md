@@ -2,7 +2,7 @@
 
 A social movie tracking app built with Flask — think Letterboxd, but open-source and yours to run. Users build personal watchlists, write reviews, follow each other, and discover films through a community feed.
 
-![Homepage](screenshots/home.jpg)
+![Homepage](screenshots/home.JPG)
 
 ---
 
