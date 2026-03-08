@@ -1,5 +1,8 @@
 # MoviWebApp
 
+[![Ko-fi](https://img.shields.io/badge/Support-Ko--fi-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/mikel777)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A social movie tracking app built with Flask — think Letterboxd, but open-source and yours to run. Users build personal watchlists, write reviews, follow each other, and discover films through a community feed.
 
 ![Homepage](screenshots/home.JPG)
@@ -166,3 +169,17 @@ MoviWebApp/
 | `/notifications` | Notification centre |
 | `/nights` | Movie nights |
 | `/challenges` | Challenges |
+
+---
+
+## Contributing
+
+Pull requests welcome. Open an issue first for big changes.
+
+## Support
+
+MoviWebApp is free and open source, forever. If it made you smile, [buy me a coffee ☕](https://ko-fi.com/mikel777) — it genuinely helps.
+
+## License
+
+MIT
