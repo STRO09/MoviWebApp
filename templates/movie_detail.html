@@ -2,6 +2,9 @@
 {% block title %}{{ movie.title }} · MoviWebApp{% endblock %}
 
 {% block content %}
+{% if movie.poster_url %}
+<div class="detail-backdrop" style="--poster: url('{{ movie.poster_url }}')"></div>
+{% endif %}
 <div class="movie-detail">
     <div class="detail-poster-col">
         {% if movie.poster_url %}

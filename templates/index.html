@@ -1,6 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% if hero %}
+<div class="hero-section" style="--poster: url('{{ hero.poster_url }}')">
+    <div class="hero-backdrop"></div>
+    <div class="hero-content">
+        <div class="hero-poster-wrap">
+            <img src="{{ hero.poster_url }}" alt="{{ hero.title }}" class="hero-poster">
+        </div>
+        <div class="hero-info">
+            <div class="hero-eyebrow">Loved by the community</div>
+            <h1 class="hero-title">{{ hero.title }}</h1>
+            {% if hero.year or hero.director %}
+            <p class="hero-meta">
+                {% if hero.year %}{{ hero.year }}{% endif %}
+                {% if hero.year and hero.director %} · {% endif %}
+                {% if hero.director %}{{ hero.director }}{% endif %}
+            </p>
+            {% endif %}
+            {% if hero.genre %}
+            <div class="genre-tags hero-genres">
+                {% for g in hero.genre.split(', ')[:3] %}
+                    <span class="genre-tag" data-genre="{{ g }}">{{ g }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if hero.plot %}
+            <p class="hero-plot">{{ hero.plot | truncate(180) }}</p>
+            {% endif %}
+            <div class="hero-actions">
+                <a href="{{ url_for('movie_detail', movie_id=hero.id) }}" class="btn hero-btn">View Film</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('search', q=hero.title) }}" class="btn btn-ghost">+ Add to list</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="stats-bar">
     <span>👥 {{ users | length }} users</span>
     <span class="stats-sep">·</span>

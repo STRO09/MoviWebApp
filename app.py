@@ -385,9 +385,16 @@ def index():
     total_movies = Movie.query.count()
     activity = data_manager.get_recent_activity(limit=8)
     inspiration = get_inspiration_with_posters()
+    # Pick a hero film: 5-star, has poster, watched — rotate by day
+    import datetime
+    hero_pool = (Movie.query
+                 .filter(Movie.rating == 5, Movie.poster_url.isnot(None),
+                         Movie.status == 'watched')
+                 .all())
+    hero = hero_pool[datetime.date.today().toordinal() % len(hero_pool)] if hero_pool else None
     return render_template("index.html", users=users,
                            total_movies=total_movies, activity=activity,
-                           inspiration=inspiration)
+                           inspiration=inspiration, hero=hero)
 
 
 @app.route("/users/<int:user_id>")
